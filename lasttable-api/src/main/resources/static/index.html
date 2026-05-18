@@ -2,183 +2,239 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <title>Last Table — KOSIS 과실 생산량</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Last Table - KOSIS 과실 생산량</title>
+
+  <!--
+    CSS는 <style> 안에 한 번에 적었다.
+    선택자(.클래스이름 또는 태그이름) 다음 { } 안에 꾸미는 규칙을 쓴다.
+  -->
   <style>
+
+    /* body는 페이지 전체. 글꼴, 가운데 정렬, 배경색 지정 */
     body {
-      font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      font-family: "Apple SD Gothic Neo", "맑은 고딕", sans-serif;
       max-width: 900px;
       margin: 40px auto;
-      padding: 0 20px;
+      padding: 20px;
+      background-color: #fafafa;
       color: #222;
-      background: #fafafa;
     }
-    h1 { margin-bottom: 4px; }
-    .sub { color: #777; margin-top: 0; }
 
-    .form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: end;
-      margin: 20px 0;
-      padding: 16px;
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 8px;
+    h1 {
+      margin-bottom: 4px;
     }
-    .field { display: flex; flex-direction: column; gap: 4px; }
-    label { font-size: 12px; color: #555; }
-    select, input, button {
+
+    /* 회색 부제목. p 태그 중 sub 클래스에만 적용 */
+    p.sub {
+      color: #777;
+      margin-top: 0;
+    }
+
+    /* 입력 폼을 감싸는 흰색 박스 */
+    .box {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 20px 0;
+    }
+
+    label {
+      display: block;       /* 한 줄 차지 */
+      font-size: 13px;
+      color: #555;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    select, input {
       font-size: 14px;
-      padding: 8px 10px;
+      padding: 8px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      background: #fff;
+      width: 220px;
     }
-    button {
-      background: #2c7a7b;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    button:hover { background: #285e61; }
 
+    button {
+      margin-top: 16px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      background-color: #2c7a7b;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #285e61;
+    }
+
+    /* 호출 URL과 결과 요약을 보여주는 회색 글씨 */
     .meta {
       font-size: 13px;
       color: #555;
-      margin: 6px 0 10px;
+      margin: 8px 0;
     }
+
+    /* 호출 URL 부분만 등돌이체로 표시 */
     .url {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 12px;
+      font-family: monospace;
       color: #2c7a7b;
       word-break: break-all;
     }
 
+    /* JSON을 보여주는 검은 박스 */
     pre {
-      background: #1e1e1e;
+      background-color: #1e1e1e;
       color: #e6e6e6;
       padding: 16px;
       border-radius: 8px;
-      overflow: auto;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-family: monospace;
       font-size: 13px;
       line-height: 1.5;
       max-height: 70vh;
+      overflow: auto;
     }
-    .error { color: #c0392b; }
+
+    /* 에러일 때 글자색 빨강 */
+    .error {
+      color: #ff6b6b;
+    }
   </style>
 </head>
 <body>
 
   <h1>Last Table · KOSIS 과실 생산량</h1>
-  <p class="sub">통계청 KOSIS 통계표 <code>DT_1ET0292</code> (과실생산량) 원본 JSON 뷰어</p>
+  <p class="sub">통계청 KOSIS 통계표 DT_1ET0292 (과실생산량) 원본 JSON 뷰어</p>
 
-  <div class="form">
-    <div class="field">
-      <label for="fruit">과일</label>
-      <select id="fruit">
-        <option value="apple">사과 (apple)</option>
-        <option value="pear">배 (pear)</option>
-        <option value="peach">복숭아 (peach)</option>
-        <option value="grape">포도 (grape)</option>
-        <option value="mandarin">감귤 (mandarin)</option>
-        <option value="persimmon">감 (persimmon)</option>
-        <option value="sweet-persimmon">단감 (sweet-persimmon)</option>
-        <option value="astringent-persimmon">떫은감 (astringent-persimmon)</option>
-        <option value="plum">자두 (plum)</option>
-        <option value="japanese-apricot">매실 (japanese-apricot)</option>
-      </select>
-    </div>
+  <!-- 사용자 입력을 받는 박스 -->
+  <div class="box">
 
-    <div class="field">
-      <label for="years">최근 N년</label>
-      <input id="years" type="number" min="1" max="20" value="3" style="width: 80px;">
-    </div>
+    <label for="fruit">과일</label>
+    <select id="fruit">
+      <option value="apple">사과 (apple)</option>
+      <option value="pear">배 (pear)</option>
+      <option value="peach">복숭아 (peach)</option>
+      <option value="grape">포도 (grape)</option>
+      <option value="mandarin">감귤 (mandarin)</option>
+      <option value="persimmon">감 (persimmon)</option>
+      <option value="sweet-persimmon">단감 (sweet-persimmon)</option>
+      <option value="astringent-persimmon">떫은감 (astringent-persimmon)</option>
+      <option value="plum">자두 (plum)</option>
+      <option value="japanese-apricot">매실 (japanese-apricot)</option>
+    </select>
 
-    <div class="field">
-      <label for="region">시도 필터 (선택)</label>
-      <select id="region">
-        <option value="">전체 시도</option>
-        <option value="계">전국 합계</option>
-        <option value="서울특별시">서울특별시</option>
-        <option value="부산광역시">부산광역시</option>
-        <option value="대구광역시">대구광역시</option>
-        <option value="인천광역시">인천광역시</option>
-        <option value="광주광역시">광주광역시</option>
-        <option value="대전광역시">대전광역시</option>
-        <option value="울산광역시">울산광역시</option>
-        <option value="세종특별자치시">세종특별자치시</option>
-        <option value="경기도">경기도</option>
-        <option value="강원도">강원도</option>
-        <option value="충청북도">충청북도</option>
-        <option value="충청남도">충청남도</option>
-        <option value="전라북도">전라북도</option>
-        <option value="전라남도">전라남도</option>
-        <option value="경상북도">경상북도</option>
-        <option value="경상남도">경상남도</option>
-        <option value="제주도">제주도</option>
-      </select>
-    </div>
+    <label for="years">최근 N년</label>
+    <input id="years" type="number" min="1" max="20" value="3">
 
-    <button id="go">조회</button>
+    <label for="region">시도 필터 (선택)</label>
+    <select id="region">
+      <option value="">전체 시도</option>
+      <option value="계">전국 합계</option>
+      <option value="서울특별시">서울특별시</option>
+      <option value="부산광역시">부산광역시</option>
+      <option value="대구광역시">대구광역시</option>
+      <option value="인천광역시">인천광역시</option>
+      <option value="광주광역시">광주광역시</option>
+      <option value="대전광역시">대전광역시</option>
+      <option value="울산광역시">울산광역시</option>
+      <option value="세종특별자치시">세종특별자치시</option>
+      <option value="경기도">경기도</option>
+      <option value="강원도">강원도</option>
+      <option value="충청북도">충청북도</option>
+      <option value="충청남도">충청남도</option>
+      <option value="전라북도">전라북도</option>
+      <option value="전라남도">전라남도</option>
+      <option value="경상북도">경상북도</option>
+      <option value="경상남도">경상남도</option>
+      <option value="제주도">제주도</option>
+    </select>
+
+    <br>
+    <button id="goBtn">조회</button>
   </div>
 
   <div class="meta">
-    호출 URL: <span class="url" id="callUrl">—</span>
+    호출 URL: <span class="url" id="callUrl">-</span>
   </div>
   <div class="meta" id="summary">결과 대기 중…</div>
 
   <pre id="output">// 위에서 [조회] 버튼을 누르면 JSON이 여기에 표시됩니다.</pre>
 
+
+  <!--
+    여기부터 JavaScript.
+    아래 함수가 [조회] 버튼을 눌렀을 때 실행된다.
+  -->
   <script>
-    const $ = (id) => document.getElementById(id);
-    const fruitSel  = $("fruit");
-    const yearsInp  = $("years");
-    const regionSel = $("region");
-    const out       = $("output");
-    const callUrl   = $("callUrl");
-    const summary   = $("summary");
 
-    async function fetchData() {
-      const fruit  = fruitSel.value;
-      const years  = yearsInp.value || 3;
-      const region = regionSel.value;
+    // 1) [조회] 버튼이 눌렸을 때 실행할 함수를 만든다.
+    function fetchData() {
 
-      const params = new URLSearchParams();
-      params.set("years", years);
-      if (region) params.set("region", region);
+      // 2) 화면에서 사용자가 고른 값들을 읽는다.
+      var fruitSelect = document.getElementById("fruit");
+      var fruit = fruitSelect.value;          // 예: "apple"
 
-      const url = `/api/kosis/fruits/${encodeURIComponent(fruit)}/production?${params.toString()}`;
-      callUrl.textContent = url;
-      summary.textContent = "불러오는 중...";
-      out.classList.remove("error");
-      out.textContent = "// loading...";
+      var yearsInput = document.getElementById("years");
+      var years = yearsInput.value;            // 예: "3"
 
-      try {
-        const t0 = performance.now();
-        const res = await fetch(url);
-        const t1 = performance.now();
+      var regionSelect = document.getElementById("region");
+      var region = regionSelect.value;         // 예: "서울특별시" 또는 ""
 
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status} ${res.statusText}`);
-        }
-        const data = await res.json();
-        out.textContent = JSON.stringify(data, null, 2);
-        summary.textContent = `결과 ${data.length} 행 · ${(t1 - t0).toFixed(0)}ms`;
-      } catch (err) {
-        out.classList.add("error");
-        out.textContent = `// 에러 발생\n${err.message}`;
-        summary.textContent = "조회 실패";
+      // 3) 호출할 서버 주소(URL)를 만든다.
+      //    "/api/kosis/fruits/{과일}/production?years={년}&region={시도}" 형태.
+      var url = "/api/kosis/fruits/" + encodeURIComponent(fruit) + "/production";
+      url = url + "?years=" + encodeURIComponent(years);
+
+      // region을 골랐으면 URL 뒤에 추가
+      if (region !== "") {
+        url = url + "&region=" + encodeURIComponent(region);
       }
+
+      // 4) 화면 윗부분에 "지금 어떤 URL을 호출하는지" 표시한다.
+      document.getElementById("callUrl").textContent = url;
+      document.getElementById("summary").textContent = "불러오는 중...";
+
+      // 5) 결과 박스에 우선 "로딩 중" 글자를 넣는다.
+      var output = document.getElementById("output");
+      output.classList.remove("error");
+      output.textContent = "// loading...";
+
+      // 6) fetch 함수로 서버에 요청을 보낸다.
+      //    fetch 는 "이걸 보내줘" 라고 부탁만 하고,
+      //    응답이 도착하면 .then(...) 안의 함수를 실행해준다.
+      fetch(url)
+        .then(function (response) {
+          // 7) 응답 상태가 200(성공)이 아니면 직접 에러를 발생시킨다.
+          if (response.ok === false) {
+            throw new Error("HTTP " + response.status);
+          }
+          // 8) 응답 본문(JSON)을 자바스크립트 객체로 변환한다.
+          return response.json();
+        })
+        .then(function (data) {
+          // 9) 받은 데이터를 보기 좋게 들여쓰기 해서 화면에 표시한다.
+          output.textContent = JSON.stringify(data, null, 2);
+          document.getElementById("summary").textContent =
+            "결과 " + data.length + " 행";
+        })
+        .catch(function (error) {
+          // 10) 어디서든 실패하면 여기로 온다. 빨간 글씨로 에러 표시.
+          output.classList.add("error");
+          output.textContent = "// 에러 발생\n" + error.message;
+          document.getElementById("summary").textContent = "조회 실패";
+        });
     }
 
-    $("go").addEventListener("click", fetchData);
+    // 11) [조회] 버튼을 찾아서, 클릭하면 fetchData() 가 실행되도록 연결한다.
+    var goButton = document.getElementById("goBtn");
+    goButton.onclick = fetchData;
 
-    // 페이지 로드시 한 번 자동 조회 (사과, 3년)
+    // 12) 페이지가 열리자마자 한 번 자동으로 조회한다 (사과, 3년).
     fetchData();
+
   </script>
 
 </body>
