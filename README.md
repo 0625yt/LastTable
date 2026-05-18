@@ -46,6 +46,30 @@ LastTable/
             └─ FruitProductionController.java
 ```
 
+## 개발 환경
+
+| 도구 | 버전 | 설치 |
+|------|------|------|
+| JDK | **21 이상** | [Adoptium Temurin](https://adoptium.net/temurin/releases/?version=21) 또는 `brew install --cask temurin@21` |
+| Git | 최신 | [git-scm.com](https://git-scm.com/) 또는 `brew install git` |
+| IDE (선택) | IntelliJ IDEA Community / VS Code (Extension Pack for Java) | — |
+
+Gradle은 따로 설치할 필요 없습니다. 프로젝트에 wrapper (`./gradlew`)가 포함되어 있어 자동으로 알맞은 버전을 받아 씁니다.
+
+### 환경 확인
+
+```bash
+java -version    # openjdk 21.x.x 이상
+git --version    # 아무 버전이나
+```
+
+### 프로젝트 받기
+
+```bash
+git clone https://github.com/0625yt/LastTable.git
+cd LastTable
+```
+
 ## 실행 방법
 
 ### 데모용 키 사용 (가장 빠른 방법)
