@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: lasttable-api
+
+server:
+  port: 8080
+
+kosis:
+  base-url: https://kosis.kr
+  # 실제 키는 환경변수 KOSIS_API_KEY 로 주입한다.
+  # 로컬에서 띄울 때는 .env 또는 IDE Run Configuration에서 환경변수로 설정.
+  api-key: ${KOSIS_API_KEY:}
+  timeout-ms: 10000
+
+logging:
+  level:
+    com.lasttable.api: DEBUG
+    org.springframework.web.reactive.function.client: INFO
