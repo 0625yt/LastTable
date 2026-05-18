@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>Last Table — KOSIS 과실 생산량</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #222;
+      background: #fafafa;
+    }
+    h1 { margin-bottom: 4px; }
+    .sub { color: #777; margin-top: 0; }
+
+    .form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+      margin: 20px 0;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+    }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 12px; color: #555; }
+    select, input, button {
+      font-size: 14px;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+    }
+    button {
+      background: #2c7a7b;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: #285e61; }
+
+    .meta {
+      font-size: 13px;
+      color: #555;
+      margin: 6px 0 10px;
+    }
+    .url {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      color: #2c7a7b;
+      word-break: break-all;
+    }
+
+    pre {
+      background: #1e1e1e;
+      color: #e6e6e6;
+      padding: 16px;
+      border-radius: 8px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      max-height: 70vh;
+    }
+    .error { color: #c0392b; }
+  </style>
+</head>
+<body>
+
+  <h1>Last Table · KOSIS 과실 생산량</h1>
+  <p class="sub">통계청 KOSIS 통계표 <code>DT_1ET0292</code> (과실생산량) 원본 JSON 뷰어</p>
+
+  <div class="form">
+    <div class="field">
+      <label for="fruit">과일</label>
+      <select id="fruit">
+        <option value="apple">사과 (apple)</option>
+        <option value="pear">배 (pear)</option>
+        <option value="peach">복숭아 (peach)</option>
+        <option value="grape">포도 (grape)</option>
+        <option value="mandarin">감귤 (mandarin)</option>
+        <option value="persimmon">감 (persimmon)</option>
+        <option value="sweet-persimmon">단감 (sweet-persimmon)</option>
+        <option value="astringent-persimmon">떫은감 (astringent-persimmon)</option>
+        <option value="plum">자두 (plum)</option>
+        <option value="japanese-apricot">매실 (japanese-apricot)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="years">최근 N년</label>
+      <input id="years" type="number" min="1" max="20" value="3" style="width: 80px;">
+    </div>
+
+    <div class="field">
+      <label for="region">시도 필터 (선택)</label>
+      <select id="region">
+        <option value="">전체 시도</option>
+        <option value="계">전국 합계</option>
+        <option value="서울특별시">서울특별시</option>
+        <option value="부산광역시">부산광역시</option>
+        <option value="대구광역시">대구광역시</option>
+        <option value="인천광역시">인천광역시</option>
+        <option value="광주광역시">광주광역시</option>
+        <option value="대전광역시">대전광역시</option>
+        <option value="울산광역시">울산광역시</option>
+        <option value="세종특별자치시">세종특별자치시</option>
+        <option value="경기도">경기도</option>
+        <option value="강원도">강원도</option>
+        <option value="충청북도">충청북도</option>
+        <option value="충청남도">충청남도</option>
+        <option value="전라북도">전라북도</option>
+        <option value="전라남도">전라남도</option>
+        <option value="경상북도">경상북도</option>
+        <option value="경상남도">경상남도</option>
+        <option value="제주도">제주도</option>
+      </select>
+    </div>
+
+    <button id="go">조회</button>
+  </div>
+
+  <div class="meta">
+    호출 URL: <span class="url" id="callUrl">—</span>
+  </div>
+  <div class="meta" id="summary">결과 대기 중…</div>
+
+  <pre id="output">// 위에서 [조회] 버튼을 누르면 JSON이 여기에 표시됩니다.</pre>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const fruitSel  = $("fruit");
+    const yearsInp  = $("years");
+    const regionSel = $("region");
+    const out       = $("output");
+    const callUrl   = $("callUrl");
+    const summary   = $("summary");
+
+    async function fetchData() {
+      const fruit  = fruitSel.value;
+      const years  = yearsInp.value || 3;
+      const region = regionSel.value;
+
+      const params = new URLSearchParams();
+      params.set("years", years);
+      if (region) params.set("region", region);
+
+      const url = `/api/kosis/fruits/${encodeURIComponent(fruit)}/production?${params.toString()}`;
+      callUrl.textContent = url;
+      summary.textContent = "불러오는 중...";
+      out.classList.remove("error");
+      out.textContent = "// loading...";
+
+      try {
+        const t0 = performance.now();
+        const res = await fetch(url);
+        const t1 = performance.now();
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        }
+        const data = await res.json();
+        out.textContent = JSON.stringify(data, null, 2);
+        summary.textContent = `결과 ${data.length} 행 · ${(t1 - t0).toFixed(0)}ms`;
+      } catch (err) {
+        out.classList.add("error");
+        out.textContent = `// 에러 발생\n${err.message}`;
+        summary.textContent = "조회 실패";
+      }
+    }
+
+    $("go").addEventListener("click", fetchData);
+
+    // 페이지 로드시 한 번 자동 조회 (사과, 3년)
+    fetchData();
+  </script>
+
+</body>
+</html>
