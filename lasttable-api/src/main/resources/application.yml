@@ -7,10 +7,9 @@ server:
 
 kosis:
   base-url: https://kosis.kr
-  # 우선순위: 환경변수 KOSIS_API_KEY > 아래 기본값.
-  # ⚠️ 이 파일은 Public 저장소에 올라가므로, 키를 노출하고 싶지 않다면
-  #    아래 기본값을 비우고 환경변수로만 주입하세요.
-  api-key: ${KOSIS_API_KEY:OWUyNDE4YTRjNDU2ODY4N2IyZjEzMzQ3NTQ1YzBmNGE=}
+  # 데모용: 키를 yml에 박아둠. 환경변수는 신경 쓰지 않는다.
+  # (실서비스라면 환경변수로 주입해야 함)
+  api-key: OWUyNDE4YTRjNDU2ODY4N2IyZjEzMzQ3NTQ1YzBmNGE=
   timeout-ms: 10000
 
 logging:
