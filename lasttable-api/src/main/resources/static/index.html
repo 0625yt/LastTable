@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <title>Last Table - KOSIS 과실 생산량</title>
+  <title>Last Table - KOSIS 뷰어</title>
 
   <!--
     CSS는 <style> 안에 한 번에 적었다.
@@ -10,7 +10,7 @@
   -->
   <style>
 
-    /* body는 페이지 전체. 글꼴, 가운데 정렬, 배경색 지정 */
+    /* 페이지 전체 기본 */
     body {
       font-family: "Apple SD Gothic Neo", "맑은 고딕", sans-serif;
       max-width: 900px;
@@ -20,27 +20,56 @@
       color: #222;
     }
 
-    h1 {
-      margin-bottom: 4px;
-    }
+    h1 { margin-bottom: 4px; }
 
-    /* 회색 부제목. p 태그 중 sub 클래스에만 적용 */
     p.sub {
       color: #777;
       margin-top: 0;
     }
 
-    /* 입력 폼을 감싸는 흰색 박스 */
+    /* 탭 버튼 줄 */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 20px 0 0;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .tab {
+      padding: 10px 18px;
+      font-size: 14px;
+      background-color: transparent;
+      color: #555;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+    }
+
+    /* 활성화된 탭 */
+    .tab.active {
+      color: #2c7a7b;
+      border-bottom: 2px solid #2c7a7b;
+      font-weight: bold;
+    }
+
+    /* 입력 폼 박스 */
     .box {
       background-color: white;
       border: 1px solid #ddd;
-      border-radius: 8px;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
       padding: 16px;
-      margin: 20px 0;
+      margin-bottom: 20px;
+    }
+
+    /* 숨겨진 박스 */
+    .hidden {
+      display: none;
     }
 
     label {
-      display: block;       /* 한 줄 차지 */
+      display: block;
       font-size: 13px;
       color: #555;
       margin-top: 10px;
@@ -55,7 +84,7 @@
       width: 220px;
     }
 
-    button {
+    button.go {
       margin-top: 16px;
       padding: 10px 20px;
       font-size: 14px;
@@ -67,25 +96,22 @@
       cursor: pointer;
     }
 
-    button:hover {
+    button.go:hover {
       background-color: #285e61;
     }
 
-    /* 호출 URL과 결과 요약을 보여주는 회색 글씨 */
     .meta {
       font-size: 13px;
       color: #555;
       margin: 8px 0;
     }
 
-    /* 호출 URL 부분만 등돌이체로 표시 */
     .url {
       font-family: monospace;
       color: #2c7a7b;
       word-break: break-all;
     }
 
-    /* JSON을 보여주는 검은 박스 */
     pre {
       background-color: #1e1e1e;
       color: #e6e6e6;
@@ -98,7 +124,6 @@
       overflow: auto;
     }
 
-    /* 에러일 때 글자색 빨강 */
     .error {
       color: #ff6b6b;
     }
@@ -106,11 +131,20 @@
 </head>
 <body>
 
-  <h1>Last Table · KOSIS 과실 생산량</h1>
-  <p class="sub">통계청 KOSIS 통계표 DT_1ET0292 (과실생산량) 원본 JSON 뷰어</p>
+  <h1>Last Table · KOSIS 뷰어</h1>
+  <p class="sub">통계청 KOSIS 공공 API 원본 JSON 뷰어</p>
 
-  <!-- 사용자 입력을 받는 박스 -->
-  <div class="box">
+  <!-- 탭 버튼 줄 -->
+  <div class="tabs">
+    <button class="tab active" id="tabFruit">과실 생산량</button>
+    <button class="tab"        id="tabAqua">수산 양식 생산량</button>
+  </div>
+
+
+  <!-- ============================== -->
+  <!-- 과실 탭 박스                    -->
+  <!-- ============================== -->
+  <div class="box" id="boxFruit">
 
     <label for="fruit">과일</label>
     <select id="fruit">
@@ -126,11 +160,11 @@
       <option value="japanese-apricot">매실 (japanese-apricot)</option>
     </select>
 
-    <label for="years">최근 N년</label>
-    <input id="years" type="number" min="1" max="20" value="3">
+    <label for="fruitYears">최근 N년</label>
+    <input id="fruitYears" type="number" min="1" max="20" value="3">
 
-    <label for="region">시도 필터 (선택)</label>
-    <select id="region">
+    <label for="fruitRegion">시도 필터 (선택)</label>
+    <select id="fruitRegion">
       <option value="">전체 시도</option>
       <option value="계">전국 합계</option>
       <option value="서울특별시">서울특별시</option>
@@ -153,9 +187,39 @@
     </select>
 
     <br>
-    <button id="goBtn">조회</button>
+    <button class="go" id="fruitGoBtn">조회</button>
   </div>
 
+
+  <!-- ============================== -->
+  <!-- 수산 탭 박스 (처음에는 숨김)     -->
+  <!-- ============================== -->
+  <div class="box hidden" id="boxAqua">
+
+    <label for="aquaYears">최근 N년</label>
+    <input id="aquaYears" type="number" min="1" max="20" value="3">
+
+    <label for="aquaRegion">시도 필터 (선택)</label>
+    <select id="aquaRegion">
+      <option value="">전체 시도</option>
+      <option value="전국">전국 합계</option>
+      <option value="부산광역시">부산광역시</option>
+      <option value="울산광역시">울산광역시</option>
+      <option value="강원도">강원도</option>
+      <option value="충청남도">충청남도</option>
+      <option value="전라북도">전라북도</option>
+      <option value="전라남도">전라남도</option>
+      <option value="경상북도">경상북도</option>
+      <option value="경상남도">경상남도</option>
+      <option value="제주도">제주도</option>
+    </select>
+
+    <br>
+    <button class="go" id="aquaGoBtn">조회</button>
+  </div>
+
+
+  <!-- 결과 표시 영역 (탭과 무관하게 공용) -->
   <div class="meta">
     호출 URL: <span class="url" id="callUrl">-</span>
   </div>
@@ -166,74 +230,103 @@
 
   <!--
     여기부터 JavaScript.
-    아래 함수가 [조회] 버튼을 눌렀을 때 실행된다.
   -->
   <script>
 
-    // 1) [조회] 버튼이 눌렸을 때 실행할 함수를 만든다.
-    function fetchData() {
-
-      // 2) 화면에서 사용자가 고른 값들을 읽는다.
-      var fruitSelect = document.getElementById("fruit");
-      var fruit = fruitSelect.value;          // 예: "apple"
-
-      var yearsInput = document.getElementById("years");
-      var years = yearsInput.value;            // 예: "3"
-
-      var regionSelect = document.getElementById("region");
-      var region = regionSelect.value;         // 예: "서울특별시" 또는 ""
-
-      // 3) 호출할 서버 주소(URL)를 만든다.
-      //    "/api/kosis/fruits/{과일}/production?years={년}&region={시도}" 형태.
-      var url = "/api/kosis/fruits/" + encodeURIComponent(fruit) + "/production";
-      url = url + "?years=" + encodeURIComponent(years);
-
-      // region을 골랐으면 URL 뒤에 추가
-      if (region !== "") {
-        url = url + "&region=" + encodeURIComponent(region);
-      }
-
-      // 4) 화면 윗부분에 "지금 어떤 URL을 호출하는지" 표시한다.
+    // ─────────────────────────────────────────
+    // 공용: URL 한 개를 호출해서 결과를 화면에 그린다.
+    // ─────────────────────────────────────────
+    function callApi(url) {
       document.getElementById("callUrl").textContent = url;
       document.getElementById("summary").textContent = "불러오는 중...";
 
-      // 5) 결과 박스에 우선 "로딩 중" 글자를 넣는다.
       var output = document.getElementById("output");
       output.classList.remove("error");
       output.textContent = "// loading...";
 
-      // 6) fetch 함수로 서버에 요청을 보낸다.
-      //    fetch 는 "이걸 보내줘" 라고 부탁만 하고,
-      //    응답이 도착하면 .then(...) 안의 함수를 실행해준다.
       fetch(url)
         .then(function (response) {
-          // 7) 응답 상태가 200(성공)이 아니면 직접 에러를 발생시킨다.
           if (response.ok === false) {
             throw new Error("HTTP " + response.status);
           }
-          // 8) 응답 본문(JSON)을 자바스크립트 객체로 변환한다.
           return response.json();
         })
         .then(function (data) {
-          // 9) 받은 데이터를 보기 좋게 들여쓰기 해서 화면에 표시한다.
           output.textContent = JSON.stringify(data, null, 2);
           document.getElementById("summary").textContent =
             "결과 " + data.length + " 행";
         })
         .catch(function (error) {
-          // 10) 어디서든 실패하면 여기로 온다. 빨간 글씨로 에러 표시.
           output.classList.add("error");
           output.textContent = "// 에러 발생\n" + error.message;
           document.getElementById("summary").textContent = "조회 실패";
         });
     }
 
-    // 11) [조회] 버튼을 찾아서, 클릭하면 fetchData() 가 실행되도록 연결한다.
-    var goButton = document.getElementById("goBtn");
-    goButton.onclick = fetchData;
+    // ─────────────────────────────────────────
+    // 과실 탭의 [조회] 버튼이 눌렸을 때
+    // ─────────────────────────────────────────
+    function fetchFruit() {
+      var fruit  = document.getElementById("fruit").value;
+      var years  = document.getElementById("fruitYears").value;
+      var region = document.getElementById("fruitRegion").value;
 
-    // 12) 페이지가 열리자마자 한 번 자동으로 조회한다 (사과, 3년).
-    fetchData();
+      var url = "/api/kosis/fruits/" + encodeURIComponent(fruit) + "/production";
+      url = url + "?years=" + encodeURIComponent(years);
+      if (region !== "") {
+        url = url + "&region=" + encodeURIComponent(region);
+      }
+      callApi(url);
+    }
+
+    // ─────────────────────────────────────────
+    // 수산 탭의 [조회] 버튼이 눌렸을 때
+    // ─────────────────────────────────────────
+    function fetchAqua() {
+      var years  = document.getElementById("aquaYears").value;
+      var region = document.getElementById("aquaRegion").value;
+
+      var url = "/api/kosis/aquaculture/production";
+      url = url + "?years=" + encodeURIComponent(years);
+      if (region !== "") {
+        url = url + "&region=" + encodeURIComponent(region);
+      }
+      callApi(url);
+    }
+
+    // 버튼-함수 연결
+    document.getElementById("fruitGoBtn").onclick = fetchFruit;
+    document.getElementById("aquaGoBtn").onclick  = fetchAqua;
+
+
+    // ─────────────────────────────────────────
+    // 탭 전환
+    // ─────────────────────────────────────────
+    function showTab(name) {
+      var tabFruit  = document.getElementById("tabFruit");
+      var tabAqua   = document.getElementById("tabAqua");
+      var boxFruit  = document.getElementById("boxFruit");
+      var boxAqua   = document.getElementById("boxAqua");
+
+      if (name === "fruit") {
+        tabFruit.classList.add("active");
+        tabAqua.classList.remove("active");
+        boxFruit.classList.remove("hidden");
+        boxAqua.classList.add("hidden");
+      } else {
+        tabAqua.classList.add("active");
+        tabFruit.classList.remove("active");
+        boxAqua.classList.remove("hidden");
+        boxFruit.classList.add("hidden");
+      }
+    }
+
+    document.getElementById("tabFruit").onclick = function () { showTab("fruit"); };
+    document.getElementById("tabAqua").onclick  = function () { showTab("aqua"); };
+
+
+    // 페이지 열릴 때: 과실 탭 자동 조회
+    fetchFruit();
 
   </script>
 

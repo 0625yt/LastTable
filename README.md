@@ -31,7 +31,7 @@ LastTable/
    └─ src/main/
       ├─ resources/
       │  ├─ application.yml             # 설정 (KOSIS 키 포함, 데모용)
-      │  └─ static/index.html           # JSON 뷰어 페이지
+      │  └─ static/index.html           # JSON 뷰어 페이지 (과실/수산 탭)
       └─ java/com/lasttable/api/
          ├─ LasttableApiApplication.java
          ├─ kosis/                      # KOSIS API 호출 계층
@@ -39,11 +39,15 @@ LastTable/
          │  ├─ KosisClient.java
          │  ├─ KosisRawItem.java
          │  └─ KosisApiException.java
-         └─ fruit/                      # 과실 생산량 도메인
-            ├─ FruitItem.java
-            ├─ FruitProduction.java
-            ├─ FruitProductionService.java
-            └─ FruitProductionController.java
+         ├─ fruit/                      # 과실 생산량 도메인
+         │  ├─ FruitItem.java
+         │  ├─ FruitProduction.java
+         │  ├─ FruitProductionService.java
+         │  └─ FruitProductionController.java
+         └─ aquaculture/                # 수산 양식 생산량 도메인
+            ├─ AquacultureProduction.java
+            ├─ AquacultureService.java
+            └─ AquacultureController.java
 ```
 
 ## 개발 환경
@@ -123,30 +127,46 @@ Environment variables에 등록.
 
 ### 2. REST API 직접 호출
 
+#### 과실 생산량
+
 | Method | URL | 설명 |
 |--------|-----|------|
 | GET | `/api/kosis/fruits` | 지원하는 과일 목록 |
-| GET | `/api/kosis/fruits/{fruit}/production?years=5&region=서울특별시` | 시도별 생산량 (region 생략 시 전국 시도 전체) |
+| GET | `/api/kosis/fruits/{fruit}/production?years=5&region=서울특별시` | 과일·시도별 생산량 (region 생략 시 전국 시도 전체) |
 
 지원 과일 슬러그:
 `apple, pear, peach, grape, mandarin, persimmon, sweet-persimmon, astringent-persimmon, plum, japanese-apricot`
 
-#### 호출 예시
-
 ```bash
 curl http://localhost:8080/api/kosis/fruits
-
 curl "http://localhost:8080/api/kosis/fruits/apple/production?years=3"
-
 curl "http://localhost:8080/api/kosis/fruits/mandarin/production?years=5&region=제주도"
 ```
-
-응답 예시:
 
 ```json
 [
   { "fruit":"사과","regionCode":"00","regionName":"계","year":2025,"valueTon":447952.5984 },
   { "fruit":"사과","regionCode":"11","regionName":"서울특별시","year":2025,"valueTon":0.1424 }
+]
+```
+
+#### 수산 양식 생산량
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| GET | `/api/kosis/aquaculture/production?years=5&region=전라남도` | 시도별 양식 총생산량(M/T) |
+
+데이터는 어종 합산이며, 통계표 `DT_1EZ0007` (시도·시군구별 양식현황 총괄)에서 가져옵니다.
+
+```bash
+curl "http://localhost:8080/api/kosis/aquaculture/production?years=3"
+curl "http://localhost:8080/api/kosis/aquaculture/production?years=5&region=전라남도"
+```
+
+```json
+[
+  { "regionCode":"00","regionName":"전국","year":2025,"productionTon":82807.0 },
+  { "regionCode":"36","regionName":"전라남도","year":2025,"productionTon":27325.0 }
 ]
 ```
 
@@ -162,8 +182,10 @@ KOSIS가 내려주는 시도 이름을 그대로 써야 합니다.
 
 ## 데이터 출처
 
-- **현재 시점 생산량**: KOSIS 통계청 통계표 `DT_1ET0292` (과실생산량(성과수+미과수))
+- **과실 생산량**: KOSIS `DT_1ET0292` (과실생산량(성과수+미과수))
   - https://kosis.kr/statHtml/statHtml.do?orgId=101&tblId=DT_1ET0292
+- **수산 양식 생산량**: KOSIS `DT_1EZ0007` (시도·시군구별 양식현황 총괄)
+  - https://kosis.kr/statHtml/statHtml.do?orgId=101&tblId=DT_1EZ0007
 - **미래 예측(예정)**: 농촌진흥청 SSP 기후변화 시나리오 자료
 
 ## 트러블슈팅
