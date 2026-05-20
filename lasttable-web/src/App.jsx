@@ -24,6 +24,7 @@ import {
   CloudSun,
 } from "lucide-react";
 import "./App.css";
+import DetailDisappearing from "./DetailDisappearing";
 
 const API_BASE = "http://localhost:8080";
 
@@ -36,6 +37,11 @@ const TRACKED_FRUITS = [
 ];
 
 function App() {
+  // 현재 어떤 화면을 보고 있는지 추적
+  // "home"        — 홈
+  // "disappearing"— "올해 사라지고 있는 식재료" 상세
+  const [view, setView] = useState("home");
+
   const [decreasing, setDecreasing] = useState({
     loading: true,
     items: [],
@@ -87,6 +93,11 @@ function App() {
   const dropAbs = Math.abs(avgChange).toFixed(1);
 
 
+  // 상세 화면이면 그것만 렌더
+  if (view === "disappearing") {
+    return <DetailDisappearing onBack={function () { setView("home"); }} />;
+  }
+
   return (
     <div className="app">
 
@@ -109,8 +120,13 @@ function App() {
         <p className="hero-sub">오늘의 식탁이 어떻게 바뀌고 있는지 살펴봐요</p>
       </div>
 
-      {/* 메인 알람 카드 — 진짜 데이터 */}
-      <div className="main-card">
+      {/* 메인 알람 카드 — 진짜 데이터. 클릭하면 상세 화면으로 이동. */}
+      <div
+        className="main-card"
+        onClick={function () { setView("disappearing"); }}
+        style={{ cursor: "pointer" }}
+        role="button"
+      >
         <div className="row">
           <span className="tag">
             <ArrowDownRight size={12} strokeWidth={2.5} />
