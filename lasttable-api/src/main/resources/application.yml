@@ -3,9 +3,8 @@ spring:
     name: lasttable-api
 
 server:
-  # 로컬 / Railway 모두 8080 고정.
-  # Railway 네트워킹의 target port 도 8080 으로 맞춰야 함.
-  port: 8080
+  # 로컬에서는 8080, Render 같은 호스팅은 PORT 환경변수를 동적으로 주입한다.
+  port: ${PORT:8080}
 
 kosis:
   base-url: https://kosis.kr

@@ -1,0 +1,17 @@
+# Render Blueprint — Last Table 백엔드
+#
+# 사용법
+#   1) Render 대시보드 → New + → Blueprint
+#   2) GitHub 0625yt/LastTable 선택 → Apply
+#   3) 자동으로 이 yaml 읽어서 서비스 생성됨
+
+services:
+  - type: web
+    name: lasttable-api
+    runtime: docker
+    plan: free
+    region: singapore           # 한국에서 가장 가까운 무료 리전
+    rootDir: lasttable-api
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/kosis/fruits
+    autoDeploy: true
