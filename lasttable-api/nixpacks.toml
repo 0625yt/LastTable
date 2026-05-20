@@ -6,7 +6,7 @@
 nixPkgs = ["openjdk21"]
 
 [phases.build]
-cmds = ["./gradlew bootJar -x test --no-daemon"]
+cmds = ["./gradlew clean build -x check -x test -Pproduction --no-daemon"]
 
 [start]
 cmd = "java -jar build/libs/lasttable-api-0.0.1-SNAPSHOT.jar"

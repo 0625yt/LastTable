@@ -1,0 +1,5 @@
+[build]
+cmd = "./gradlew clean build -x check -x test -Pproduction"
+
+[deploy]
+startCmd = "java -jar build/libs/lasttable-api-0.0.1-SNAPSHOT.jar"
