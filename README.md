@@ -30,27 +30,34 @@ KOSIS(통계청) 공공데이터에서 작물·수산 양식 생산량 정보를
 ```
 LastTable/
 ├─ .gitignore
-└─ lasttable-api/                       # Spring Boot 서버
-   └─ src/main/
-      ├─ resources/
-      │  ├─ application.yml             # 설정 (KOSIS 키 포함, 데모용)
-      │  └─ static/index.html           # JSON 뷰어 페이지 (과실/수산 탭)
-      └─ java/com/lasttable/api/
-         ├─ LasttableApiApplication.java
-         ├─ kosis/                      # KOSIS API 호출 계층
-         │  ├─ KosisProperties.java
-         │  ├─ KosisClient.java
-         │  ├─ KosisRawItem.java
-         │  └─ KosisApiException.java
-         ├─ fruit/                      # 과실 생산량 도메인
-         │  ├─ FruitItem.java
-         │  ├─ FruitProduction.java
-         │  ├─ FruitProductionService.java
-         │  └─ FruitProductionController.java
-         └─ aquaculture/                # 수산 양식 생산량 도메인
-            ├─ AquacultureProduction.java
-            ├─ AquacultureService.java
-            └─ AquacultureController.java
+├─ render.yaml                          # Render(백엔드) Blueprint
+├─ lasttable-api/                       # Spring Boot 백엔드 (Java 21)
+│  ├─ Dockerfile                        # Render용 컨테이너 빌드
+│  └─ src/main/
+│     ├─ resources/
+│     │  └─ application.yml             # 설정 (KOSIS 키 포함, 데모용)
+│     └─ java/com/lasttable/api/
+│        ├─ LasttableApiApplication.java
+│        ├─ config/WebConfig.java       # CORS 설정
+│        ├─ kosis/                      # KOSIS API 호출 계층
+│        │  ├─ KosisProperties.java
+│        │  ├─ KosisClient.java
+│        │  ├─ KosisRawItem.java
+│        │  └─ KosisApiException.java
+│        ├─ fruit/                      # 과실 생산량 도메인
+│        │  ├─ FruitItem.java
+│        │  ├─ FruitProduction.java
+│        │  ├─ FruitProductionService.java
+│        │  └─ FruitProductionController.java
+│        └─ aquaculture/                # 수산 양식 생산량 도메인
+│           ├─ AquacultureProduction.java
+│           ├─ AquacultureService.java
+│           └─ AquacultureController.java
+└─ lasttable-web/                       # Vite + React 프론트엔드
+   ├─ vercel.json
+   └─ src/
+      ├─ App.jsx / App.css              # 홈 화면
+      └─ DetailDisappearing.jsx / .css  # "사라지는 식재료" 상세
 ```
 
 ## 개발 환경

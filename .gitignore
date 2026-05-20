@@ -53,3 +53,4 @@ yarn-error.log*
 *.log
 logs/
 tmp/
+.vercel
