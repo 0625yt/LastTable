@@ -1,0 +1,12 @@
+# Railway / Nixpacks 빌드 설정 — Spring Boot
+#
+# Railway 가 자동 감지하지만, JDK 버전과 시작 명령을 명시해서 빌드 안정화.
+
+[phases.setup]
+nixPkgs = ["openjdk21"]
+
+[phases.build]
+cmds = ["./gradlew bootJar -x test --no-daemon"]
+
+[start]
+cmd = "java -jar build/libs/lasttable-api-0.0.1-SNAPSHOT.jar"

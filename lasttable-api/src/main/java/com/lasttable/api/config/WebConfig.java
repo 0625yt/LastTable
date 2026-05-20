@@ -19,10 +19,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/api/**")
+                // 정확히 일치하는 출처들
                 .allowedOrigins(
                         "http://localhost:5173",   // Vite 기본 포트
-                        "http://localhost:3000"    // React 기본 포트(혹시 모를 경우 대비)
+                        "http://localhost:3000",   // React 기본 포트
+                        "https://green-table.vercel.app"  // 운영 URL
                 )
+                // Vercel preview 배포는 매번 URL이 달라지므로 패턴으로 허용
+                // 예: green-table-git-feature-foo-bar.vercel.app
+                .allowedOriginPatterns("https://*-vercel.app", "https://*.vercel.app")
                 .allowedMethods("GET")
                 .allowCredentials(false);
     }

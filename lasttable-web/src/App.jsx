@@ -26,7 +26,10 @@ import {
 import "./App.css";
 import DetailDisappearing from "./DetailDisappearing";
 
-const API_BASE = "http://localhost:8080";
+// 배포 환경에 따라 백엔드 주소가 달라진다.
+// - 로컬: Vite 가 .env.development 또는 기본값 사용
+// - Vercel: 프로젝트 환경변수 VITE_API_BASE 에서 읽음
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
 
 const TRACKED_FRUITS = [
   { slug: "apple",    name: "사과" },
