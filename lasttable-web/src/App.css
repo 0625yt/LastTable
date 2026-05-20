@@ -1,0 +1,244 @@
+/* App.css */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f4f7f3;
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.app {
+  width: 390px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #fbfcfa;
+  padding: 28px 22px 110px;
+  color: #222;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: #2f6b3b;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.bell {
+  font-size: 24px;
+}
+
+.hero {
+  position: relative;
+  margin-top: 40px;
+}
+
+.hero h1 {
+  font-size: 28px;
+  margin: 0 0 10px;
+}
+
+.hero p {
+  color: #555;
+  margin: 0;
+}
+
+.weather {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8df;
+  border-radius: 20px;
+  padding: 12px 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.carbon-card {
+  margin-top: 38px;
+  padding: 24px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #eff9ef, #ffffff);
+  border: 1px solid #dfeadf;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.carbon-card h3 {
+  color: #2f6b3b;
+  margin: 0 0 14px;
+}
+
+.carbon-card strong {
+  font-size: 40px;
+  color: #4e9f5a;
+}
+
+.carbon-card span {
+  font-size: 18px;
+  color: #666;
+}
+
+.carbon-card p {
+  color: #666;
+}
+
+.earth {
+  font-size: 72px;
+}
+
+.bar {
+  width: 170px;
+  height: 8px;
+  background: #dceede;
+  border-radius: 20px;
+}
+
+.bar div {
+  width: 78%;
+  height: 100%;
+  background: #4e9f5a;
+  border-radius: 20px;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 34px 0 16px;
+}
+
+.title h2 {
+  font-size: 21px;
+  margin: 0;
+}
+
+.title span {
+  color: #777;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.card {
+  min-height: 150px;
+  border-radius: 22px;
+  padding: 18px;
+  border: 1px solid #e6e6e6;
+}
+
+.card h3 {
+  font-size: 16px;
+  margin: 0 0 14px;
+}
+
+.card p {
+  color: #555;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.card strong {
+  color: #2f9e44;
+  font-size: 22px;
+}
+
+.card .down {
+  color: #d04545;
+}
+
+.green {
+  background: #edf8ef;
+}
+
+.yellow {
+  background: #fff8df;
+}
+
+.purple {
+  background: #f3efff;
+}
+
+.mint {
+  background: #eaf9f3;
+}
+
+.mini-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.mini-list div {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 18px;
+  padding: 14px 8px;
+  text-align: center;
+  font-size: 24px;
+}
+
+.mini-list b {
+  display: block;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.mini-list p {
+  font-size: 11px;
+  color: #777;
+}
+
+nav {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: 360px;
+  height: 84px;
+  background: #ffffff;
+  border-radius: 36px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+nav div {
+  color: #666;
+  font-size: 22px;
+  text-align: center;
+}
+
+nav span {
+  display: block;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+nav .active {
+  color: #4e9f5a;
+  font-weight: 700;
+}
+
+.camera {
+  background: #4e9f5a;
+  color: white;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-top: -28px;
+}

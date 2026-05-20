@@ -15,12 +15,15 @@
 
 ## 현재 저장소 범위
 
-이 저장소에는 **백엔드 API 서버 (`lasttable-api/`)** 와
-**JSON 뷰어 정적 페이지** 가 들어 있습니다.
-KOSIS(통계청) 공공데이터에서 작물 생산량 정보를 가져와 화면에 제공합니다.
+이 저장소에는 두 개의 프로젝트가 들어 있습니다.
 
-- 언어/프레임워크: **Java 21 + Spring Boot 3.5**
-- 빌드: **Gradle (wrapper 포함)**
+| 폴더 | 역할 | 스택 |
+|------|------|------|
+| `lasttable-api/` | 백엔드 API 서버 + JSON 뷰어 정적 페이지 | Java 21 + Spring Boot 3.5 (Gradle wrapper 포함) |
+| `lasttable-web/` | 모바일 홈 화면 (그린테이블) | Node 22 + Vite + React |
+
+KOSIS(통계청) 공공데이터에서 작물·수산 양식 생산량 정보를 가져와
+프론트엔드 화면에 제공합니다.
 
 ## 디렉터리 구조
 
@@ -55,6 +58,7 @@ LastTable/
 | 도구 | 버전 | 설치 |
 |------|------|------|
 | JDK | **21 이상** | [Adoptium Temurin](https://adoptium.net/temurin/releases/?version=21) 또는 `brew install --cask temurin@21` |
+| Node.js | **20 이상** (22 권장) | [nodejs.org](https://nodejs.org/) 또는 `brew install node` |
 | Git | 최신 | [git-scm.com](https://git-scm.com/) 또는 `brew install git` |
 | IDE (선택) | IntelliJ IDEA Community / VS Code (Extension Pack for Java) | — |
 
@@ -64,6 +68,7 @@ Gradle은 따로 설치할 필요 없습니다. 프로젝트에 wrapper (`./grad
 
 ```bash
 java -version    # openjdk 21.x.x 이상
+node --version   # v20.x 이상
 git --version    # 아무 버전이나
 ```
 
@@ -76,9 +81,11 @@ cd LastTable
 
 ## 실행 방법
 
-### 데모용 키 사용 (가장 빠른 방법)
+백엔드와 프론트엔드를 각각 띄워야 합니다. 터미널 두 개 사용.
 
-`application.yml` 에 KOSIS API 키가 박혀 있어서 **별도 설정 없이 바로 실행**됩니다.
+### 1) 백엔드 (Spring Boot, 포트 8080)
+
+`application.yml` 에 KOSIS API 키가 박혀 있어 별도 설정 없이 바로 실행됩니다.
 
 ```bash
 cd lasttable-api
@@ -96,6 +103,19 @@ Tomcat started on port 8080
 
 > ⚠️ 이 키는 데모용으로 노출돼 있습니다. 본인 프로젝트로 활용한다면
 > https://kosis.kr/openapi 에서 본인 키를 새로 발급받아 교체하세요.
+
+### 2) 프론트엔드 (Vite + React, 포트 5173)
+
+```bash
+cd lasttable-web
+npm install        # 최초 1회
+npm run dev
+```
+
+접속: **http://localhost:5173/**
+
+홈 화면이 뜨고, "🥕 생산량 감소 식재료" 카드가 백엔드에서 데이터를 받아
+실제 증감률을 표시합니다(나머지 카드는 더미 UI).
 
 ### 본인 키로 교체하려면
 
