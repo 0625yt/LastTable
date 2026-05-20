@@ -1,16 +1,32 @@
-// App.jsx
+// App.jsx — Last Table 홈
 //
-// Last Table 홈 화면.
-// 디자인은 받아온 그대로 유지하고,
-// "🥕 생산량 감소 식재료" 카드 한 장만 백엔드 API와 실제로 연결한다.
+// 재디자인 포인트
+//  - 이모지 제거, lucide-react 라인 아이콘만 사용
+//  - 시각 위계: 알람 메인 카드 1장 (풀폭) + 보조 3장 + 탄소 1줄 + 미니 4
+//  - 색 시스템: 그린(브랜드) + 알람 레드. 그 외 화이트/그레이.
+//  - 백엔드 연결: 메인 카드의 "감소율" 숫자 (KOSIS 사과/배/복숭아/포도/감귤 평균)
 
 import { useEffect, useState } from "react";
+import {
+  Bell,
+  Leaf,
+  ArrowDownRight,
+  ChevronRight,
+  Sprout,
+  Camera,
+  ShoppingBag,
+  Recycle,
+  Heart,
+  Award,
+  Home as HomeIcon,
+  Store,
+  User,
+  CloudSun,
+} from "lucide-react";
 import "./App.css";
 
-// 백엔드 서버 주소. 나중에 배포되면 환경변수로 빼면 된다.
 const API_BASE = "http://localhost:8080";
 
-// 우리가 추적할 과일 5종 — 화면에서는 상위 3개만 보여줄 것.
 const TRACKED_FRUITS = [
   { slug: "apple",    name: "사과" },
   { slug: "pear",     name: "배" },
@@ -20,21 +36,17 @@ const TRACKED_FRUITS = [
 ];
 
 function App() {
-  // 백엔드에서 가져올 "감소 식재료" 카드용 상태
   const [decreasing, setDecreasing] = useState({
     loading: true,
-    items: [],   // [{ name: "사과", changePercent: -12.3 }, ...]
+    items: [],
     error: null,
   });
 
-  // 컴포넌트가 처음 화면에 그려질 때 한 번 실행 (백엔드 호출)
   useEffect(function () {
     loadDecreasingFruits();
   }, []);
 
-  // 각 과일별로 "전국 합계 최근 2년" 데이터를 받아서 증감률 계산.
   function loadDecreasingFruits() {
-    // 동시에 5개 요청 보내기
     const requests = TRACKED_FRUITS.map(function (f) {
       const url = API_BASE
         + "/api/kosis/fruits/" + encodeURIComponent(f.slug)
@@ -46,23 +58,19 @@ function App() {
       .then(function (results) {
         const items = [];
         for (let i = 0; i < results.length; i++) {
-          const rows = results[i];          // [{ year, valueTon, ... }, ...]
+          const rows = results[i];
           const meta = TRACKED_FRUITS[i];
           if (!Array.isArray(rows) || rows.length < 2) continue;
-
-          // 연도 오름차순 정렬 후 (작년 → 올해) 비교
           rows.sort(function (a, b) { return a.year - b.year; });
           const prev = rows[rows.length - 2].valueTon;
           const curr = rows[rows.length - 1].valueTon;
           if (prev === 0) continue;
-          const changePercent = ((curr - prev) / prev) * 100;
-
-          items.push({ name: meta.name, changePercent: changePercent });
+          items.push({
+            name: meta.name,
+            changePercent: ((curr - prev) / prev) * 100,
+          });
         }
-
-        // 가장 많이 줄어든 순서로 정렬 (음수가 클수록 앞)
         items.sort(function (a, b) { return a.changePercent - b.changePercent; });
-
         setDecreasing({ loading: false, items: items, error: null });
       })
       .catch(function (err) {
@@ -70,112 +78,178 @@ function App() {
       });
   }
 
-  // 상위 3개 + 평균 감소율 — 카드에 표시할 값
+  // 가장 많이 줄어든 상위 3개
   const topThree = decreasing.items.slice(0, 3);
   const topThreeNames = topThree.map(function (x) { return x.name; }).join(", ");
   const avgChange = topThree.length === 0
     ? 0
     : topThree.reduce(function (s, x) { return s + x.changePercent; }, 0) / topThree.length;
+  const dropAbs = Math.abs(avgChange).toFixed(1);
 
 
-  // ─────────────────────────────────────────────
-  // 렌더링
-  // ─────────────────────────────────────────────
   return (
     <div className="app">
-      <header>
-        <div className="logo">🌱 그린테이블</div>
-        <div className="bell">🔔</div>
-      </header>
 
-      <section className="hero">
-        <h1>안녕하세요, 그린님!</h1>
-        <p>오늘도 지구를 위한 선택을 함께해요 🌱</p>
-        <div className="weather">☀️ 22°C<br />서울시 강남구</div>
-      </section>
+      {/* 헤더 */}
+      <div className="header">
+        <div className="logo-wrap">
+          <div className="logo-mark">
+            <Leaf size={16} strokeWidth={2.5} />
+          </div>
+          <div className="logo-text">Last Table</div>
+        </div>
+        <button className="icon-btn" aria-label="알림">
+          <Bell size={18} />
+        </button>
+      </div>
 
-      <section className="carbon-card">
-        <div>
-          <h3>오늘 절약한 탄소량</h3>
-          <strong>1.85 <span>kg CO₂</span></strong>
-          <p>나무 2.1그루를 심은 효과예요!</p>
-          <div className="bar">
-            <div></div>
+      {/* 인사말 */}
+      <div className="hero">
+        <h1>안녕하세요, 그린님</h1>
+        <p className="hero-sub">오늘의 식탁이 어떻게 바뀌고 있는지 살펴봐요</p>
+      </div>
+
+      {/* 메인 알람 카드 — 진짜 데이터 */}
+      <div className="main-card">
+        <div className="row">
+          <span className="tag">
+            <ArrowDownRight size={12} strokeWidth={2.5} />
+            CLIMATE ALERT
+          </span>
+          <div className="arrow-circle">
+            <ChevronRight size={18} />
           </div>
         </div>
-        <div className="earth">🌍</div>
-      </section>
 
-      <section className="insight">
-        <div className="title">
-          <h2>오늘의 인사이트</h2>
-          <span>더보기 ›</span>
-        </div>
+        <h2>올해 사라지고 있는 식재료</h2>
 
-        <div className="grid">
+        {decreasing.loading && (
+          <>
+            <p className="sub">KOSIS에서 최신 통계를 불러오는 중…</p>
+            <div className="big">
+              <div className="skeleton" style={{ width: 120, height: 44 }} />
+            </div>
+          </>
+        )}
 
-          {/* ★ 백엔드 연결된 유일한 카드 ★ */}
-          <div className="card green">
-            <h3>🥕 생산량 감소 식재료</h3>
+        {!decreasing.loading && decreasing.error && (
+          <p className="sub" style={{ color: "var(--red)" }}>
+            데이터를 불러오지 못했어요 ({decreasing.error})
+          </p>
+        )}
 
-            {decreasing.loading && <p>불러오는 중...</p>}
+        {!decreasing.loading && !decreasing.error && topThree.length > 0 && (
+          <>
+            <p className="sub">
+              {topThreeNames} 등 {topThree.length}종의 작년 대비 평균 생산량
+            </p>
+            <div className="big">
+              <span className="big-num">−{dropAbs}</span>
+              <span className="big-unit">%</span>
+            </div>
+          </>
+        )}
 
-            {decreasing.error && <p>에러: {decreasing.error}</p>}
+        {!decreasing.loading && !decreasing.error && topThree.length === 0 && (
+          <p className="sub">집계 가능한 데이터가 없습니다.</p>
+        )}
+      </div>
 
-            {!decreasing.loading && !decreasing.error && topThree.length > 0 && (
-              <>
-                <p>
-                  {topThreeNames} 등<br />
-                  {topThree.length}종 주의 필요
-                </p>
-                <strong className={avgChange < 0 ? "down" : ""}>
-                  {avgChange > 0 ? "↑ " : "↓ "}
-                  {Math.abs(avgChange).toFixed(1)}%
-                </strong>
-              </>
-            )}
+      {/* 보조 카드 3장 */}
+      <div className="section-title">
+        <h3>오늘의 인사이트</h3>
+        <span className="more">더보기 <ChevronRight size={12} /></span>
+      </div>
 
-            {!decreasing.loading && !decreasing.error && topThree.length === 0 && (
-              <p>데이터 없음</p>
-            )}
-          </div>
-
-          <div className="card yellow">
-            <h3>🌱 새로 재배되는 작물</h3>
-            <p>기후 변화에 강한<br />작물 5종 확인하기</p>
-          </div>
-
-          <div className="card purple">
-            <h3>📷 AI 식재료 분석</h3>
-            <p>사진 한 장으로 식재료 정보,<br />미래 생산량, 대체작물까지!</p>
-          </div>
-
-          <div className="card mint">
-            <h3>🛒 지역 식재료 추천</h3>
-            <p>내 주변 신선한<br />로컬푸드를 찾아보세요</p>
+      <div className="sub-cards">
+        <div className="sub-card">
+          <div className="ic"><Sprout size={16} /></div>
+          <div>
+            <div className="label">새로 자라는<br />작물</div>
+            <div className="hint">5종 보기</div>
           </div>
         </div>
-      </section>
 
-      <section className="future">
-        <div className="title">
-          <h2>함께 만드는 지속 가능한 미래</h2>
-          <span>더보기 ›</span>
+        <div className="sub-card">
+          <div className="ic"><Camera size={16} /></div>
+          <div>
+            <div className="label">AI<br />식재료 분석</div>
+            <div className="hint">사진 한 장</div>
+          </div>
         </div>
 
-        <div className="mini-list">
-          <div>🌿<b>탄소 절감</b><p>절감량 확인</p></div>
-          <div>🥕<b>못난이 식재료 마켓</b><p>합리적인 가격</p></div>
-          <div>💚<b>환경 기부</b><p>따뜻한 기부</p></div>
-          <div>🏆<b>이벤트</b><p>챌린지 참여</p></div>
+        <div className="sub-card">
+          <div className="ic"><ShoppingBag size={16} /></div>
+          <div>
+            <div className="label">지역<br />로컬 푸드</div>
+            <div className="hint">내 주변</div>
+          </div>
         </div>
-      </section>
+      </div>
 
-      <nav>
-        <div className="active">🏠 <span>홈<br />시각화</span></div>
-        <div>🛒<span>연결 마켓<br />마켓</span></div>
-        <div className="camera">📷</div>
-        <div>👤<span>MY<br />리포트</span></div>
+      {/* 탄소 카드 — 한 줄 요약 */}
+      <div className="carbon">
+        <div className="left">
+          <div className="ic"><CloudSun size={18} /></div>
+          <div>
+            <p className="ttl">오늘 절약한 탄소</p>
+            <div className="val"><em>1.85</em>kg CO₂ · 나무 2.1그루</div>
+          </div>
+        </div>
+        <ChevronRight size={18} color="var(--ink-3)" />
+      </div>
+
+      {/* 미니 액션 4개 */}
+      <div className="section-title">
+        <h3>지속 가능한 행동</h3>
+        <span className="more">더보기 <ChevronRight size={12} /></span>
+      </div>
+
+      <div className="mini-grid">
+        <div className="mini">
+          <div className="ic"><Recycle size={16} /></div>
+          <span className="nm">탄소 절감</span>
+          <span className="desc">기록 확인</span>
+        </div>
+        <div className="mini">
+          <div className="ic"><ShoppingBag size={16} /></div>
+          <span className="nm">못난이<br />마켓</span>
+          <span className="desc">합리 가격</span>
+        </div>
+        <div className="mini">
+          <div className="ic"><Heart size={16} /></div>
+          <span className="nm">환경 기부</span>
+          <span className="desc">한 끼 후원</span>
+        </div>
+        <div className="mini">
+          <div className="ic"><Award size={16} /></div>
+          <span className="nm">챌린지</span>
+          <span className="desc">이벤트 참여</span>
+        </div>
+      </div>
+
+      {/* 하단 탭바 */}
+      <nav className="tabbar">
+        <div className="tab active">
+          <HomeIcon size={20} />
+          <span>홈</span>
+        </div>
+        <div className="tab">
+          <Store size={20} />
+          <span>마켓</span>
+        </div>
+        <div className="tab">
+          <Camera size={20} />
+          <span>촬영</span>
+        </div>
+        <div className="tab">
+          <Heart size={20} />
+          <span>찜</span>
+        </div>
+        <div className="tab">
+          <User size={20} />
+          <span>MY</span>
+        </div>
       </nav>
     </div>
   );
