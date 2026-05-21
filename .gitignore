@@ -54,3 +54,5 @@ yarn-error.log*
 logs/
 tmp/
 .vercel
+.playwright-mcp/
+detail-*.png
