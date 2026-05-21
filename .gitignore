@@ -56,3 +56,11 @@ tmp/
 .vercel
 .playwright-mcp/
 detail-*.png
+
+# ============================================================
+# Model legacy/generated files
+# ============================================================
+model/future_fruit_production_predictions.csv
+model/harvest_predict_model_v1.py
+model/harvest_predict_model_v2.py
+model/raw/ssp/ENS/
