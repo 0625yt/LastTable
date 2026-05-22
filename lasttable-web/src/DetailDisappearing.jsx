@@ -37,7 +37,6 @@ import {
   Sprout,
   Heart,
   ChevronRight,
-  Link2,
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -158,24 +157,6 @@ const REGION_DATA = {
   ],
 };
 
-// 다음 해 생산량 감소 시나리오 (기후 영향, %)
-const NEXT_PROD_DROP_PCT = 8;
-
-// 피어슨 상관계수
-function pearson(xs, ys) {
-  const n = xs.length;
-  const mx = xs.reduce((a, b) => a + b, 0) / n;
-  const my = ys.reduce((a, b) => a + b, 0) / n;
-  let num = 0, dx2 = 0, dy2 = 0;
-  for (let i = 0; i < n; i++) {
-    const dx = xs[i] - mx, dy = ys[i] - my;
-    num += dx * dy;
-    dx2 += dx * dx;
-    dy2 += dy * dy;
-  }
-  return num / Math.sqrt(dx2 * dy2);
-}
-
 // 가격탄력성 — "생산량 1% 감소할 때 가격이 평균 X% 상승"
 // "감소 시그널" 분석이므로 생산량이 감소(↓) 한 구간만 평균에 포함한다.
 // (단발성 풍년 같은 역방향 구간은 노이즈로 보고 제외)
@@ -184,11 +165,47 @@ function elasticity(prod, price) {
   for (let i = 1; i < prod.length; i++) {
     const dProd  = ((prod[i]  - prod[i - 1])  / prod[i - 1])  * 100;
     const dPrice = ((price[i] - price[i - 1]) / price[i - 1]) * 100;
-    if (dProd >= -0.1) continue; // 생산량이 줄지 않은 구간 제외
+    if (dProd >= -0.1) continue;
     sum += dPrice / -dProd;
     n++;
   }
   return n ? sum / n : 0;
+}
+
+// 단순 선형회귀 — 시계열 [v0, v1, …] → { slope, intercept }
+function linearRegression(values) {
+  const n = values.length;
+  const xs = values.map(function (_, i) { return i; });
+  const mx = xs.reduce(function (a, b) { return a + b; }, 0) / n;
+  const my = values.reduce(function (a, b) { return a + b; }, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xs[i] - mx) * (values[i] - my);
+    den += (xs[i] - mx) * (xs[i] - mx);
+  }
+  const slope = den === 0 ? 0 : num / den;
+  return { slope: slope, intercept: my - slope * mx };
+}
+
+// "생산 한계 도달 연도" — 회귀선이 prod=0 에 닿는 해를 현재 기준 +N년으로 추정.
+// baseYear 는 시계열 마지막 해 (예: 2024). 음의 기울기가 아니면 null.
+function exhaustionYear(prod, baseYear) {
+  const reg = linearRegression(prod);
+  if (reg.slope >= 0) return null;
+  const lastIdx = prod.length - 1;
+  const lastValue = reg.intercept + reg.slope * lastIdx;
+  const yearsLeft = lastValue / -reg.slope;
+  return Math.round(baseYear + yearsLeft);
+}
+
+// 회귀 기반 "내년 생산량 변화율(%)" — 마지막 점 vs 회귀선 다음 점
+function nextYearProdChangePct(prod) {
+  const reg = linearRegression(prod);
+  const lastIdx = prod.length - 1;
+  const last = prod[lastIdx];
+  const next = reg.intercept + reg.slope * (lastIdx + 1);
+  if (last <= 0) return 0;
+  return ((next - last) / last) * 100;
 }
 
 function DetailDisappearing({ onBack, onNavigate }) {
@@ -250,9 +267,20 @@ function DetailDisappearing({ onBack, onNavigate }) {
   }, []);
 
   // 차트의 prod/price 배열에서 실시간 계산
-  const corr = pearson(c.prod, c.price).toFixed(2);
+  // (피어슨/탄력성은 신뢰도 표기용으로만 보유, 화면에선 후킹 문구로 변환)
   const elast = elasticity(c.prod, c.price);
-  const nextWinterPct = Math.round(elast * NEXT_PROD_DROP_PCT);
+
+  // 시계열 마지막 해 = YEARS 의 마지막 (2024)
+  const baseYear = parseInt(YEARS[YEARS.length - 1], 10);
+  const yearsAheadOfNow = baseYear - new Date().getFullYear();
+  const exhYear = exhaustionYear(c.prod, baseYear);
+  const yearsLeft = exhYear ? exhYear - new Date().getFullYear() : null;
+
+  // 내년 생산량 감소율 × 탄력성 → 내년 가격 상승률
+  const nextProdDrop = -nextYearProdChangePct(c.prod); // 양수면 감소
+  const nextPriceRisePct = Math.max(0, Math.round(nextProdDrop * elast));
+  const lastPrice = c.price[c.price.length - 1];
+  const nextPriceWon = Math.round(lastPrice * (1 + nextPriceRisePct / 100));
 
   const chartData = {
     labels: YEARS,
@@ -405,71 +433,105 @@ function DetailDisappearing({ onBack, onNavigate }) {
       {/* ── ② 상관관계 차트 ── */}
       <section className="d-section">
         <h2 className="d-h2">생산량과 소비자가격</h2>
-        <p className="d-section-sub">최근 5년치, 상관계수 화면 내 직접 산출</p>
+        <p className="d-section-sub">최근 5년치 · KOSIS 응답 기반 실시간 계산</p>
 
         <div className="d-chart-card">
-          <div className="d-chart-title">생산량지수 vs. 소비자가격</div>
-          <div className="d-chart-desc">
-            지수 100 = 2020년 기준. 가격은 도매시장 평균가.
-          </div>
-
-          <div className="d-chart-tabs">
-            {/* TOP3 작물명을 탭으로 — 위 섹션과 데이터 동기화. CORR_DATA 에 없는 작물은 표시 안 함. */}
-            {(top3.items.length > 0 ? top3.items.map(function (x) { return x.name; }) : Object.keys(CORR_DATA).slice(0, 3))
-              .filter(function (name) { return CORR_DATA[name]; })
-              .map(function (key) {
-                return (
-                  <button
-                    key={key}
-                    className={"d-tab-btn" + (chartTab === key ? " active" : "")}
-                    onClick={function () { setChartTab(key); }}
-                  >
-                    {key}
-                  </button>
-                );
-              })}
-          </div>
-
-          <div className="d-chart-legend">
-            <div className="d-legend-item">
-              <span className="d-legend-dot" style={{ background: "#2d6a4f" }} />
-              생산량 (기준=100)
+          {top3.loading || top3.items.length === 0 ? (
+            // KOSIS 응답 도착 전엔 스켈레톤만 — 하드코딩 데이터가 깜빡이지 않게
+            <div className="d-chart-skeleton">
+              <div className="sk-line w60" />
+              <div className="sk-line w40" />
+              <div className="sk-chart" />
+              <div className="sk-line w80" />
+              <div className="sk-line w70" />
             </div>
-            <div className="d-legend-item">
-              <span className="d-legend-dot" style={{ background: "#d63a3a" }} />
-              소비자가격 (원/kg)
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className="d-chart-title">생산량지수 vs. 소비자가격</div>
+              <div className="d-chart-desc">
+                지수 100 = 2020년 기준. 가격은 도매시장 평균가.
+              </div>
 
-          <div className="d-chart-canvas">
-            <Line data={chartData} options={chartOptions} />
-          </div>
+              <div className="d-chart-tabs">
+                {/* KOSIS TOP3 작물명을 탭으로 — 위 섹션과 데이터 동기화. CORR_DATA 에 없는 작물은 표시 안 함. */}
+                {top3.items
+                  .map(function (x) { return x.name; })
+                  .filter(function (name) { return CORR_DATA[name]; })
+                  .map(function (key) {
+                    return (
+                      <button
+                        key={key}
+                        className={"d-tab-btn" + (chartTab === key ? " active" : "")}
+                        onClick={function () { setChartTab(key); }}
+                      >
+                        {key}
+                      </button>
+                    );
+                  })}
+              </div>
 
-          {/* ── ③ 상관계수 + 예측 노트 ── */}
-          <div className="d-corr-note">
-            <div className="d-corr-ic">
-              <Link2 size={14} />
-            </div>
-            <div className="d-corr-text">
-              피어슨 <strong>r = {corr}</strong> · 탄력성{" "}
-              <strong>{elast.toFixed(2)}</strong>. 다음 시즌 생산량을 −8% 로
-              가정하면 {chartTab} 가격은 전년比 약{" "}
-              <strong>+{nextWinterPct}%</strong>.
-            </div>
-          </div>
-          <div className="d-source">
-            <Info size={11} /> 계산 방식: 화면 데이터에서 pearson · elasticity
-            산출 (선형 가정)
-          </div>
+              <div className="d-chart-legend">
+                <div className="d-legend-item">
+                  <span className="d-legend-dot" style={{ background: "#2d6a4f" }} />
+                  생산량 (기준=100)
+                </div>
+                <div className="d-legend-item">
+                  <span className="d-legend-dot" style={{ background: "#d63a3a" }} />
+                  소비자가격 (원/kg)
+                </div>
+              </div>
+
+              <div className="d-chart-canvas">
+                <Line data={chartData} options={chartOptions} />
+              </div>
+
+              {/* 후킹 문구: 소멸 연도 + 내년 가격 */}
+              <div className="d-hook">
+                {yearsLeft && yearsLeft > 0 && (
+                  <div className="d-hook-row warn">
+                    <div className="d-hook-num">{yearsLeft}년 뒤</div>
+                    <div className="d-hook-txt">
+                      {chartTab}, 식탁에서 사라집니다
+                      <span className="d-hook-sub">현 추세 유지 시 {exhYear}년 생산량 0</span>
+                    </div>
+                  </div>
+                )}
+                <div className="d-hook-row up">
+                  <div className="d-hook-num">+{nextPriceRisePct}%</div>
+                  <div className="d-hook-txt">
+                    내년 예상 가격
+                    <span className="d-hook-sub">
+                      {lastPrice.toLocaleString()}원 → {nextPriceWon.toLocaleString()}원 / kg
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="d-source">
+                <Info size={11} /> 최근 5년 회귀 추세 × 가격 탄력성 {elast.toFixed(2)} 기반 추정
+              </div>
+            </>
+          )}
         </div>
       </section>
 
       {/* ── ③ 지역별 ── */}
       <section className="d-section">
-        <h2 className="d-h2">{chartTab}, 지역별 생산량</h2>
+        <h2 className="d-h2">
+          {top3.loading || top3.items.length === 0 ? "지역별 생산량" : chartTab + ", 지역별 생산량"}
+        </h2>
         <p className="d-section-sub">↑ 표시는 최근 10년 사이 비중이 늘어난 신규/북상 산지</p>
 
         <div className="d-map-card">
+          {top3.loading || top3.items.length === 0 ? (
+            <div className="d-region-skeleton">
+              <div className="sk-line w70" />
+              <div className="sk-line w50" />
+              <div className="sk-line w80" />
+              <div className="sk-line w40" />
+              <div className="sk-line w60" />
+            </div>
+          ) : (
+            <>
           <div className="d-region-list">
             {regions.map(function (r) {
               return (
@@ -492,6 +554,8 @@ function DetailDisappearing({ onBack, onNavigate }) {
           <div className="d-source">
             <Info size={11} /> KOSIS · 시·도별 {chartTab} 생산량, 2024 잠정치
           </div>
+            </>
+          )}
         </div>
       </section>
 
