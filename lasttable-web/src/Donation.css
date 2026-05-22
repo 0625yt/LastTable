@@ -1,0 +1,172 @@
+/* ============================================================
+   Donation — 환경 기부 데모 화면 (홈 톤)
+   ============================================================ */
+
+.dn {
+  width: 390px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--card);
+  padding: 18px 20px 60px;
+  color: var(--ink);
+}
+
+/* 헤더 */
+.dn-hdr {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.dn-back {
+  background: none;
+  border: none;
+  padding: 6px 8px 6px 0;
+  color: var(--ink-2);
+  cursor: pointer;
+  margin-left: -8px;
+}
+
+.dn-title-wrap h1 {
+  font-size: 21px;
+  font-weight: 800;
+  margin: 0 0 2px;
+  letter-spacing: -0.5px;
+}
+
+.dn-title-wrap p {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin: 0;
+}
+
+/* 상단 약속 카드 (그린 풀폭) */
+.dn-pledge {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--green);
+  color: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.dn-pledge-ic {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.18);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.dn-pledge-h {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+
+.dn-pledge p {
+  font-size: 11.5px;
+  opacity: 0.9;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 단체 카드 */
+.dn-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.dn-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.dn-card-name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.dn-card-sub {
+  font-size: 11.5px;
+  color: var(--green);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.dn-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--green);
+  background: var(--green-soft);
+  border: 1px solid var(--green-line);
+  padding: 3px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dn-card-body {
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  margin: 0 0 10px;
+}
+
+.dn-card-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-bottom: 12px;
+}
+
+.dn-btn {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--green);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--green);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.dn-btn:hover {
+  background: var(--green-soft);
+}
+
+.dn-empty {
+  padding: 30px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.dn-foot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--ink-3);
+  margin-top: 14px;
+  line-height: 1.5;
+}

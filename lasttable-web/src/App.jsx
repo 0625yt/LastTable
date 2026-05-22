@@ -1,4 +1,4 @@
-// App.jsx — Last Table 홈
+// App.jsx — Green Table 홈
 //
 // 재디자인 포인트
 //  - 이모지 제거, lucide-react 라인 아이콘만 사용
@@ -28,6 +28,7 @@ import Market from "./Market";
 import AiMatch from "./AiMatch";
 import Wish from "./Wish";
 import My from "./My";
+import Donation from "./Donation";
 
 // 배포 환경에 따라 백엔드 주소가 달라진다.
 // - 로컬: Vite 가 .env.development 또는 기본값 사용
@@ -111,6 +112,9 @@ function App() {
   if (view === "rising") {
     return <Rising onBack={function () { setView("home"); }} />;
   }
+  if (view === "donation") {
+    return <Donation onBack={function () { setView("home"); }} />;
+  }
   if (view === "market") {
     return (
       <>
@@ -153,7 +157,7 @@ function App() {
           <div className="logo-mark">
             <Leaf size={16} strokeWidth={2.5} />
           </div>
-          <div className="logo-text">Last Table</div>
+          <div className="logo-text">Green Table</div>
         </div>
         <button className="icon-btn" aria-label="알림">
           <Bell size={18} />
@@ -270,12 +274,22 @@ function App() {
       </div>
 
       <div className="mini-grid two">
-        <div className="mini">
+        <div
+          className="mini"
+          role="button"
+          style={{ cursor: "pointer" }}
+          onClick={function () { setView("market"); }}
+        >
           <div className="ic"><ShoppingBag size={16} /></div>
           <span className="nm">못난이 마켓</span>
           <span className="desc">합리 가격</span>
         </div>
-        <div className="mini">
+        <div
+          className="mini"
+          role="button"
+          style={{ cursor: "pointer" }}
+          onClick={function () { setView("donation"); }}
+        >
           <div className="ic"><Heart size={16} /></div>
           <span className="nm">환경 기부</span>
           <span className="desc">한 끼 후원</span>

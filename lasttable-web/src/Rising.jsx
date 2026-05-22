@@ -109,7 +109,7 @@ function Rising({ onBack }) {
 
         <div className="r-foot">
           <Info size={11} />
-          <strong>LastTable 백엔드 · /api/fruits/rising</strong>
+          <strong>Green Table 백엔드 · /api/fruits/rising</strong>
           {" · 학습 데이터 17개 시도 × 5작물 × 90년치"}
         </div>
       </div>

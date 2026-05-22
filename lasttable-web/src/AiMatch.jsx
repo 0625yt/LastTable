@@ -1,4 +1,4 @@
-// AiMatch.jsx — LastTable AI 매칭 챗봇 화면
+// AiMatch.jsx — Green Table AI 매칭 챗봇 화면
 //
 // 자연어 입력 → POST /api/ai/match → Claude 응답 출력.
 // 데이터 흐름:
@@ -86,7 +86,7 @@ function AiMatch({ onNavigate }) {
           <Sparkles size={20} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="ai-hdr-name">LastTable AI</div>
+          <div className="ai-hdr-name">Green Table AI</div>
           <div className="ai-hdr-sub">기후 데이터 · 농가 재고 · 못난이 매칭</div>
         </div>
         <div className="ai-hdr-tag">BETA</div>

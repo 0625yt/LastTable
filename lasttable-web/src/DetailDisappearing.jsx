@@ -644,7 +644,7 @@ function DetailDisappearing({ onBack, onNavigate }) {
       </section>
 
       <div className="d-foot">
-        LastTable / 데이터: KOSIS, 농촌진흥청 SSP5-8.5 / 최종 갱신 2025-04
+        Green Table / 데이터: KOSIS, 농촌진흥청 SSP5-8.5 / 최종 갱신 2025-04
       </div>
     </div>
   );
