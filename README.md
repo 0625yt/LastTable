@@ -5,7 +5,7 @@
 기후변화로 점점 줄어드는 국내 작물을 KOSIS 실시간 데이터로 보여주고, ML 회귀모델로 25년 뒤 재배 지형의 변화를 예측하며, Claude AI 챗봇이 사용자의 식탁 고민을 못난이 농가 직거래까지 한 번에 연결합니다.
 
 🌐 **배포 URL**: <https://green-table.vercel.app>
-📦 **GitHub**: <https://github.com/0625yt/LastTable>
+📦 **GitHub**: <https://github.com/0625yt/GreenTable>
 
 ---
 

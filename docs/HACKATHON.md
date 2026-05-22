@@ -32,7 +32,7 @@
 | 항목 | 비고 |
 |------|------|
 | 서비스 소개 문서 | 양식 추후 제공 |
-| GitHub 리포지토리 링크 | https://github.com/0625yt/LastTable |
+| GitHub 리포지토리 링크 | https://github.com/0625yt/GreenTable |
 | 발표 PPT | 1차/2차 동일, **5분** |
 | 배포된 서비스 링크 | 선택 |
 
