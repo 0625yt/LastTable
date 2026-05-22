@@ -1,293 +1,273 @@
 /* ============================================================
-   Market — 못난이 마켓
+   Market — 못난이 마켓 (홈 톤 일치 버전)
+   원칙
+     1) 이모지 ❌ — lucide 아이콘만
+     2) 풀폭 메인 카드(AI 매칭) + 균일한 상품 카드 리스트
+     3) 컬러는 그린 + 알람 레드 두 가지
+     4) 큰 가격 / 작은 원가 — 시각 위계
    ============================================================ */
 
-:root {
-  --yellow: #f5a623;
-}
-
-.market-screen {
+.mk {
   width: 390px;
   min-height: 100vh;
   margin: 0 auto;
-  background: var(--bg);
-  padding: 22px 20px 96px;
+  background: var(--card);
+  padding: 22px 20px 110px;
   color: var(--ink);
 }
 
-.m-hdr {
+/* ────────── 헤더 ────────── */
+.mk-hdr {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-.m-hdr h1 {
-  font-size: 22px;
+.mk-hdr h1 {
+  font-size: 24px;
   font-weight: 800;
+  letter-spacing: -0.6px;
   margin: 0;
 }
 
-.bell-btn {
-  width: 34px;
-  height: 34px;
+.mk-bell {
+  width: 36px;
+  height: 36px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: #fff;
   display: grid;
   place-items: center;
+  color: var(--ink-2);
   cursor: pointer;
 }
 
-/* 검색바 */
-.m-search {
-  width: 100%;
-  height: 38px;
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  background: #fff;
+/* ────────── 검색 ────────── */
+.mk-search {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 12px;
-  font-size: 12.5px;
+  height: 42px;
+  padding: 0 14px;
+  background: var(--bg);
+  border-radius: 12px;
+  font-size: 13px;
   color: var(--ink-3);
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
-/* AI 매칭 배너 */
-.m-ai {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--green-soft);
+/* ────────── AI 매칭 풀폭 카드 (홈 메인카드 스타일) ────────── */
+.mk-ai {
+  background: linear-gradient(180deg, #fff, #f7fbf8);
   border: 1px solid var(--green-line);
-  border-radius: 12px;
-  padding: 11px 13px;
-  margin-bottom: 10px;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 20px;
   cursor: pointer;
 }
 
-.m-ai-left {
+.mk-ai-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-}
-
-.m-ai-ic {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  background: var(--green);
-  color: #fff;
-  display: grid;
-  place-items: center;
-}
-
-.m-ai-title {
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.m-ai-sub {
-  font-size: 10.5px;
-  color: var(--ink-3);
-}
-
-/* 카테고리 칩 */
-.m-cats {
-  display: flex;
-  gap: 7px;
   margin-bottom: 10px;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 
-.m-cats::-webkit-scrollbar { display: none; }
-
-.m-cat {
-  flex-shrink: 0;
-  height: 29px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
+.mk-ai-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--green);
+  background: var(--green-soft);
+  padding: 4px 9px;
   border-radius: 999px;
-  background: #fff;
+  letter-spacing: 0.3px;
+}
+
+.mk-ai-h {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: -0.4px;
+  line-height: 1.3;
+}
+
+.mk-ai-p {
   font-size: 12px;
-  font-weight: 600;
+  color: var(--ink-3);
+  margin: 0;
+}
+
+/* ────────── 카테고리 ────────── */
+.mk-cats {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.mk-cat {
+  padding: 7px 14px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 13.5px;
+  font-weight: 700;
   color: var(--ink-3);
   cursor: pointer;
   font-family: inherit;
+  letter-spacing: -0.2px;
 }
 
-.m-cat.active {
-  background: var(--green);
-  border-color: var(--green);
-  color: #fff;
+.mk-cat.active {
+  color: var(--ink);
+  border-bottom-color: var(--green);
 }
 
-/* 긴급 배너 */
-.m-urgent {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--red-soft);
-  color: var(--red);
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 6px 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-/* 상품 카드 */
-.m-card {
+/* ────────── 상품 카드 ────────── */
+.mk-card {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 13px;
-  padding: 13px;
-  margin-bottom: 9px;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
-.m-card.urgent {
-  border-color: #ffd6d6;
-  background: linear-gradient(180deg, #fff, #fffafa);
+/* 기후 위험 작물은 좌측 빨간 막대만으로 표시 (뱃지 남발 X) */
+.mk-card.risk::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--red);
 }
 
-.m-top {
-  display: flex;
-  gap: 11px;
+.mk-card-head {
   margin-bottom: 8px;
 }
 
-.m-emoji {
-  font-size: 36px;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
-.m-name {
-  font-size: 13px;
+.mk-card-name {
+  font-size: 14.5px;
   font-weight: 800;
-  margin-bottom: 3px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  letter-spacing: -0.2px;
+  margin-bottom: 4px;
 }
 
-.m-utag {
-  font-size: 9.5px;
-  font-weight: 700;
-  color: var(--red);
-  background: var(--red-soft);
-  padding: 1px 5px;
-  border-radius: 4px;
-}
-
-.m-farm {
-  font-size: 11px;
+.mk-card-farm {
+  font-size: 11.5px;
   color: var(--green);
   font-weight: 600;
   margin-bottom: 2px;
 }
 
-.m-region {
-  font-size: 10px;
-  color: var(--ink-3);
-  margin-bottom: 4px;
-}
-
-.m-kosis {
-  font-size: 9.5px;
-  font-weight: 700;
-  color: var(--red);
-  background: var(--red-soft);
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.m-tags {
-  display: flex;
-  gap: 5px;
-  margin-bottom: 9px;
-}
-
-.m-tag {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--ink-2);
-  background: #f3f4f3;
-  padding: 2px 7px;
-  border-radius: 4px;
-}
-
-.m-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-.m-orig {
+.mk-card-region {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   font-size: 10.5px;
   color: var(--ink-3);
-  text-decoration: line-through;
 }
 
-.m-price-row {
+/* 기후 위험 캡션 — 따로 한 줄, 강조 톤이 아닌 정보 톤 */
+.mk-risk-caption {
+  font-size: 11px;
+  color: var(--red);
+  font-weight: 600;
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(214, 58, 58, 0.15);
+}
+
+/* 카드 하단 — 가격 + 담기 버튼 */
+.mk-card-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.mk-orig {
+  font-size: 11px;
+  color: var(--ink-3);
+  text-decoration: line-through;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+.mk-price-line {
   display: flex;
   align-items: baseline;
-  gap: 3px;
+  gap: 4px;
 }
 
-.m-disc {
+.mk-disc {
   font-size: 13px;
   font-weight: 800;
   color: var(--red);
+  margin-right: 2px;
 }
 
-.m-price {
-  font-size: 17px;
+.mk-price {
+  font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.6px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
-.m-unit2 {
-  font-size: 10px;
+.mk-price-won {
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 1px;
+  color: var(--ink-2);
+}
+
+.mk-unit {
+  font-size: 11px;
   color: var(--ink-3);
 }
 
-.m-rating {
-  display: flex;
+.mk-rating {
+  display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 10.5px;
-  margin-top: 2px;
+  font-size: 11px;
+  color: var(--ink-2);
+  margin-top: 4px;
 }
 
-.m-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  height: 36px;
-  padding: 0 13px;
+.mk-reviews {
+  color: var(--ink-3);
+}
+
+.mk-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
   background: var(--green);
   color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 12.5px;
-  font-weight: 700;
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  font-family: inherit;
+  flex-shrink: 0;
 }
 
-.m-empty {
+/* ────────── 빈 상태 ────────── */
+.mk-empty {
   padding: 30px 16px;
   text-align: center;
   font-size: 12.5px;
   color: var(--ink-3);
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 13px;
+  background: var(--bg);
+  border-radius: 12px;
 }
 
-.m-empty.error { color: var(--red); }
+.mk-empty.error { color: var(--red); }

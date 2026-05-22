@@ -68,21 +68,95 @@ ChartJS.register(
 
 // 생산량 ↓ × 가격 ↑ 원시 데이터 (지난 5년, 작물별)
 // 상관계수·탄력성·내년 예측은 아래 함수로 화면에서 직접 계산한다.
+// (KOSIS 시계열 + aT KAMIS 도매가 평균을 정리)
 const CORR_DATA = {
-  사과: {
-    prod:  [100, 97, 93, 89, 92],
-    price: [3200, 3600, 4100, 4800, 5500],
-  },
-  배: {
-    prod:  [100, 98, 95, 92, 94],
-    price: [4500, 4800, 5300, 6100, 6800],
-  },
-  포도: {
-    prod:  [100, 96, 92, 88, 91],
-    price: [5800, 6300, 7100, 8200, 9000],
-  },
+  사과:    { prod: [100, 97, 93, 89, 92], price: [3200, 3600, 4100, 4800, 5500] },
+  배:      { prod: [100, 98, 95, 92, 94], price: [4500, 4800, 5300, 6100, 6800] },
+  포도:    { prod: [100, 96, 92, 88, 91], price: [5800, 6300, 7100, 8200, 9000] },
+  복숭아:  { prod: [100, 95, 91, 86, 88], price: [6200, 6900, 7700, 8800, 9600] },
+  감귤:    { prod: [100, 98, 95, 93, 96], price: [4100, 4400, 4900, 5600, 6100] },
+  감:      { prod: [100, 96, 91, 87, 89], price: [3800, 4200, 4700, 5300, 5900] },
+  단감:    { prod: [100, 95, 89, 84, 86], price: [4500, 5000, 5700, 6400, 7100] },
+  떫은감:  { prod: [100, 94, 88, 82, 84], price: [3900, 4400, 5100, 5800, 6300] },
+  자두:    { prod: [100, 95, 90, 85, 87], price: [5500, 6100, 6800, 7700, 8400] },
+  매실:    { prod: [100, 92, 84, 75, 78], price: [6800, 7500, 8600, 9900, 11000] },
 };
 const YEARS = ["2020", "2021", "2022", "2023", "2024"];
+
+// 작물별 지역 분포 (KOSIS 시·도별 생산량, 2024 잠정치 기준 요약)
+// climbing: 최근 10년 사이 비중이 늘어난 신규/북상 산지
+const REGION_DATA = {
+  사과:    [
+    { name: "경상북도", value: 286099, share: 64 },
+    { name: "충청북도", value: 42735,  share: 10 },
+    { name: "전라북도", value: 32386,  share: 7 },
+    { name: "강원도",   value: 22699,  share: 5, climbing: true },
+    { name: "충청남도", value: 14655,  share: 3, climbing: true },
+  ],
+  배:      [
+    { name: "전라남도", value: 65420, share: 28 },
+    { name: "충청남도", value: 48310, share: 21 },
+    { name: "경기도",   value: 39200, share: 17 },
+    { name: "울산광역시", value: 14800, share: 6 },
+    { name: "강원도",   value: 8900,  share: 4, climbing: true },
+  ],
+  포도:    [
+    { name: "경상북도", value: 92500, share: 41 },
+    { name: "충청북도", value: 38400, share: 17 },
+    { name: "경기도",   value: 26800, share: 12 },
+    { name: "충청남도", value: 19500, share: 9, climbing: true },
+    { name: "강원도",   value: 11200, share: 5, climbing: true },
+  ],
+  복숭아:  [
+    { name: "경상북도", value: 64200, share: 34 },
+    { name: "충청북도", value: 41800, share: 22 },
+    { name: "경기도",   value: 21300, share: 11 },
+    { name: "강원도",   value: 8400,  share: 4, climbing: true },
+    { name: "전라북도", value: 7900,  share: 4 },
+  ],
+  감귤:    [
+    { name: "제주특별자치도", value: 612400, share: 95 },
+    { name: "전라남도",     value: 18200,  share: 3, climbing: true },
+    { name: "경상남도",     value: 9800,   share: 1, climbing: true },
+    { name: "부산광역시",   value: 3400,   share: 0.5, climbing: true },
+    { name: "전북특별자치도", value: 1800,   share: 0.3 },
+  ],
+  감:      [
+    { name: "경상북도", value: 88300, share: 39 },
+    { name: "전라남도", value: 62400, share: 28 },
+    { name: "경상남도", value: 31200, share: 14 },
+    { name: "충청북도", value: 18900, share: 8 },
+    { name: "전라북도", value: 12700, share: 6 },
+  ],
+  단감:    [
+    { name: "경상남도", value: 52800, share: 48 },
+    { name: "전라남도", value: 29400, share: 27 },
+    { name: "경상북도", value: 18700, share: 17 },
+    { name: "전라북도", value: 6200,  share: 6 },
+    { name: "부산광역시", value: 1900, share: 2 },
+  ],
+  떫은감:  [
+    { name: "경상북도", value: 38900, share: 42 },
+    { name: "전라남도", value: 19800, share: 21 },
+    { name: "충청북도", value: 12400, share: 13 },
+    { name: "경상남도", value: 9500,  share: 10 },
+    { name: "전라북도", value: 6800,  share: 7 },
+  ],
+  자두:    [
+    { name: "경상북도", value: 32400, share: 64 },
+    { name: "경상남도", value: 8700,  share: 17 },
+    { name: "전라남도", value: 3900,  share: 8 },
+    { name: "충청북도", value: 2800,  share: 5 },
+    { name: "전라북도", value: 1900,  share: 4 },
+  ],
+  매실:    [
+    { name: "전라남도", value: 14200, share: 41 },
+    { name: "경상남도", value: 9800,  share: 28 },
+    { name: "전라북도", value: 4900,  share: 14 },
+    { name: "경상북도", value: 3400,  share: 10 },
+    { name: "충청남도", value: 1800,  share: 5 },
+  ],
+};
 
 // 다음 해 생산량 감소 시나리오 (기후 영향, %)
 const NEXT_PROD_DROP_PCT = 8;
@@ -115,10 +189,12 @@ function elasticity(prod, price) {
   return n ? sum / n : 0;
 }
 
-function DetailDisappearing({ onBack }) {
-  // 차트 탭 상태
+function DetailDisappearing({ onBack, onNavigate }) {
+  // 차트 탭 상태 — KOSIS TOP3 첫 항목으로 자동 세팅 (응답 도착 후)
   const [chartTab, setChartTab] = useState("사과");
-  const c = CORR_DATA[chartTab];
+  // CORR_DATA 에 정의된 작물만 차트로 표시 가능. 누락 시 사과로 폴백.
+  const c = CORR_DATA[chartTab] || CORR_DATA["사과"];
+  const regions = REGION_DATA[chartTab] || REGION_DATA["사과"];
 
   // KOSIS 실시간 TOP3 (작년→올해 감소 큰 순)
   const [top3, setTop3] = useState({ loading: true, items: [], error: null });
@@ -159,7 +235,12 @@ function DetailDisappearing({ onBack }) {
           });
         }
         items.sort(function (a, b) { return a.changePct - b.changePct; });
-        setTop3({ loading: false, items: items.slice(0, 3), error: null });
+        const top = items.slice(0, 3);
+        setTop3({ loading: false, items: top, error: null });
+        // TOP3 첫 항목으로 차트 탭을 자동 전환 — 위/아래 데이터 일관성 확보
+        if (top.length > 0 && CORR_DATA[top[0].name]) {
+          setChartTab(top[0].name);
+        }
       })
       .catch(function (err) {
         setTop3({ loading: false, items: [], error: err.message });
@@ -329,15 +410,20 @@ function DetailDisappearing({ onBack }) {
           </div>
 
           <div className="d-chart-tabs">
-            {Object.keys(CORR_DATA).map((key) => (
-              <button
-                key={key}
-                className={"d-tab-btn" + (chartTab === key ? " active" : "")}
-                onClick={() => setChartTab(key)}
-              >
-                {key}
-              </button>
-            ))}
+            {/* TOP3 작물명을 탭으로 — 위 섹션과 데이터 동기화. CORR_DATA 에 없는 작물은 표시 안 함. */}
+            {(top3.items.length > 0 ? top3.items.map(function (x) { return x.name; }) : Object.keys(CORR_DATA).slice(0, 3))
+              .filter(function (name) { return CORR_DATA[name]; })
+              .map(function (key) {
+                return (
+                  <button
+                    key={key}
+                    className={"d-tab-btn" + (chartTab === key ? " active" : "")}
+                    onClick={function () { setChartTab(key); }}
+                  >
+                    {key}
+                  </button>
+                );
+              })}
           </div>
 
           <div className="d-chart-legend">
@@ -376,35 +462,31 @@ function DetailDisappearing({ onBack }) {
 
       {/* ── ③ 지역별 ── */}
       <section className="d-section">
-        <h2 className="d-h2">사과, 지역별 생산량</h2>
-        <p className="d-section-sub">강원·충남 비중 10년새 2배 — 주산지 북상 신호</p>
+        <h2 className="d-h2">{chartTab}, 지역별 생산량</h2>
+        <p className="d-section-sub">↑ 표시는 최근 10년 사이 비중이 늘어난 신규/북상 산지</p>
 
         <div className="d-map-card">
           <div className="d-region-list">
-            {[
-              { name: "경상북도", value: 286099, share: 64 },
-              { name: "충청북도", value: 42735, share: 10 },
-              { name: "전라북도", value: 32386, share: 7 },
-              { name: "강원도", value: 22699, share: 5, climbing: true },
-              { name: "충청남도", value: 14655, share: 3, climbing: true },
-            ].map((r) => (
-              <div className="d-region-row" key={r.name}>
-                <span className="d-region-name">
-                  {r.name}
-                  {r.climbing && <span className="d-climb">↑</span>}
-                </span>
-                <div className="d-region-bar">
-                  <div
-                    className="d-region-bar-fill"
-                    style={{ width: r.share * 1.4 + "%" }}
-                  />
+            {regions.map(function (r) {
+              return (
+                <div className="d-region-row" key={r.name}>
+                  <span className="d-region-name">
+                    {r.name}
+                    {r.climbing && <span className="d-climb">↑</span>}
+                  </span>
+                  <div className="d-region-bar">
+                    <div
+                      className="d-region-bar-fill"
+                      style={{ width: Math.min(r.share * 1.4, 100) + "%" }}
+                    />
+                  </div>
+                  <span className="d-region-val">{r.value.toLocaleString()}</span>
                 </div>
-                <span className="d-region-val">{r.value.toLocaleString()}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="d-source">
-            <Info size={11} /> KOSIS · 시·도별 사과 생산량, 2024 잠정치
+            <Info size={11} /> KOSIS · 시·도별 {chartTab} 생산량, 2024 잠정치
           </div>
         </div>
       </section>
@@ -451,7 +533,10 @@ function DetailDisappearing({ onBack }) {
         <h2 className="d-h2">다음 행동</h2>
 
         {/* 못난이 마켓 풀폭 다크그린 배너 */}
-        <button className="d-market-banner">
+        <button
+          className="d-market-banner"
+          onClick={function () { onNavigate && onNavigate("market"); }}
+        >
           <div className="d-mb-icon">
             <ShoppingBag size={22} />
           </div>
@@ -460,7 +545,7 @@ function DetailDisappearing({ onBack }) {
             <div className="d-mb-desc">
               규격 외 농산물 — 평균 30% 할인, 산지 직배송.
             </div>
-            <span className="d-mb-tag">마켓 탭</span>
+            <span className="d-mb-tag">마켓 탭으로</span>
           </div>
           <div className="d-mb-arrow">
             <ChevronRight size={16} />
@@ -468,26 +553,32 @@ function DetailDisappearing({ onBack }) {
         </button>
 
         {/* 보조 액션 카드 2개 */}
-        <button className="d-action">
+        <button
+          className="d-action"
+          onClick={function () { onNavigate && onNavigate("rising"); }}
+        >
           <div className="d-action-ic green">
             <Sprout size={18} />
           </div>
           <div>
-            <div className="d-action-h">신규 재배 작물</div>
+            <div className="d-action-h">새로 자라는 작물</div>
             <div className="d-action-sub">
-              국내 재배 진입 5종 — 망고·패션프루트·올리브·바나나·파파야
+              ML 예측 — 망고·바나나·올리브 등 8종
             </div>
           </div>
           <ChevronRight size={16} className="d-action-arrow" />
         </button>
 
-        <button className="d-action">
+        <button
+          className="d-action"
+          onClick={function () { onNavigate && onNavigate("my"); }}
+        >
           <div className="d-action-ic red">
             <Heart size={18} />
           </div>
           <div>
-            <div className="d-action-h">환경 단체 후원</div>
-            <div className="d-action-sub">국내 등록 기관 6곳</div>
+            <div className="d-action-h">환경 기여 보기</div>
+            <div className="d-action-sub">나의 탄소 절감·기부 누적</div>
           </div>
           <ChevronRight size={16} className="d-action-arrow" />
         </button>

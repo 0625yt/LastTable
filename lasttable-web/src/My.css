@@ -1,31 +1,26 @@
 /* ============================================================
-   My — 프로필 / 통계 / 뱃지 / 메뉴
+   My — 프로필 / 통계 / 뱃지 (홈 톤)
    ============================================================ */
 
-:root {
-  --amber:      #c47c00;
-  --amber-soft: #fff8ec;
-}
-
-.my-screen {
+.my {
   width: 390px;
   min-height: 100vh;
   margin: 0 auto;
-  background: var(--bg);
-  padding: 0 20px 96px;
+  background: var(--card);
+  padding: 22px 20px 110px;
   color: var(--ink);
 }
 
-/* 프로필 카드 */
+/* 프로필 — 홈 메인카드와 같은 풀폭 강조 */
 .my-profile {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 13px;
   background: var(--green);
   border-radius: 18px;
-  padding: 17px;
-  margin: 16px 0 13px;
+  padding: 18px;
   color: #fff;
+  margin-bottom: 16px;
 }
 
 .my-avatar {
@@ -38,33 +33,33 @@
   flex-shrink: 0;
 }
 
+.my-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .my-name {
   font-size: 17px;
   font-weight: 800;
-  margin-bottom: 2px;
+  letter-spacing: -0.3px;
+  margin-bottom: 3px;
 }
 
-.my-email {
+.my-meta {
   font-size: 11.5px;
   opacity: 0.8;
-  margin-bottom: 1px;
-}
-
-.my-joined {
-  font-size: 10.5px;
-  opacity: 0.65;
 }
 
 .my-edit {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
-  border-radius: 9px;
-  padding: 5px 12px;
+  border-radius: 10px;
+  padding: 7px 12px;
   font-size: 12px;
   font-weight: 700;
-  margin-left: auto;
   cursor: pointer;
+  font-family: inherit;
 }
 
 /* 통계 3개 */
@@ -79,7 +74,7 @@
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 13px;
-  padding: 13px 10px;
+  padding: 13px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,71 +86,76 @@
   width: 30px;
   height: 30px;
   border-radius: 9px;
+  background: var(--green-soft);
+  color: var(--green);
   display: grid;
   place-items: center;
 }
-
-.my-stat-ic.g { background: var(--green-soft); color: var(--green); }
-.my-stat-ic.r { background: var(--red-soft);   color: var(--red); }
-.my-stat-ic.a { background: var(--amber-soft); color: var(--amber); }
 
 .my-stat-num {
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.5px;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .my-stat-num small {
   font-size: 12px;
+  font-weight: 700;
+  margin-left: 1px;
+  color: var(--ink-2);
 }
 
 .my-stat-lbl {
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--ink-3);
   font-weight: 600;
 }
 
 /* 월별 차트 */
-.my-chart-card {
+.my-chart {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 13px;
-  padding: 13px;
+  padding: 14px;
   margin-bottom: 12px;
 }
 
-.my-chart-title {
+.my-chart-h {
   font-size: 13.5px;
   font-weight: 800;
-  margin-bottom: 11px;
+  margin-bottom: 12px;
+  letter-spacing: -0.2px;
 }
 
-.my-chart {
+.my-bars {
   display: flex;
   align-items: flex-end;
-  justify-content: space-around;
-  height: 72px;
-  gap: 6px;
-  margin-bottom: 5px;
+  justify-content: space-between;
+  gap: 8px;
+  height: 80px;
+  margin-bottom: 6px;
 }
 
-.my-bar-wrap {
+.my-bar-col {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  flex: 1;
+  gap: 4px;
+  height: 100%;
 }
 
 .my-bar-val {
-  font-size: 8.5px;
+  font-size: 9.5px;
   font-weight: 700;
   color: var(--ink-3);
 }
 
 .my-bar-bg {
   width: 100%;
+  flex: 1;
   background: var(--green-soft);
   border-radius: 5px;
   display: flex;
@@ -170,64 +170,75 @@
 }
 
 .my-bar-lbl {
-  font-size: 9px;
+  font-size: 10px;
   color: var(--ink-3);
   font-weight: 600;
 }
 
-/* 환경 기여 카드 */
+.my-chart-unit {
+  font-size: 10px;
+  color: var(--ink-3);
+  text-align: right;
+}
+
+/* 환경 기여 */
 .my-contrib {
   background: var(--green-soft);
   border: 1px solid var(--green-line);
   border-radius: 13px;
-  padding: 13px;
-  margin-bottom: 12px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
 }
 
-.my-contrib-hdr {
-  font-size: 12px;
+.my-contrib-h {
+  font-size: 12.5px;
   font-weight: 800;
   color: var(--green);
-  margin-bottom: 11px;
-}
-
-.my-contrib-items {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+  margin-bottom: 12px;
+  letter-spacing: -0.2px;
 }
 
 .my-contrib-row {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .my-contrib-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
+  flex: 1;
   text-align: center;
-  padding: 0 4px;
 }
 
 .my-contrib-num {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--green);
+  letter-spacing: -0.5px;
+  margin-bottom: 3px;
+  font-variant-numeric: tabular-nums;
 }
 
 .my-contrib-lbl {
-  font-size: 10px;
+  font-size: 10.5px;
   color: var(--ink-2);
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
-.my-contrib-div {
-  width: 1px;
-  height: 34px;
-  background: var(--green-line);
-  margin: 0 6px;
+/* 섹션 헤더 */
+.my-section-h {
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: -0.2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.my-section-h span {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  font-weight: 600;
 }
 
 /* 뱃지 */
@@ -235,32 +246,27 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 7px;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
 
 .my-badge {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 11px;
-  padding: 11px 6px;
+  padding: 14px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   text-align: center;
 }
 
 .my-badge.locked {
-  opacity: 0.35;
-  filter: grayscale(1);
-}
-
-.my-badge-em {
-  font-size: 22px;
+  opacity: 0.5;
 }
 
 .my-badge-nm {
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 700;
   line-height: 1.3;
 }
@@ -271,40 +277,33 @@
   border: 1px solid var(--line);
   border-radius: 13px;
   overflow: hidden;
-  margin-bottom: 8px;
 }
 
 .my-menu-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 13px;
+  width: 100%;
+  padding: 14px 14px;
+  background: #fff;
+  border: none;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
+  font-family: inherit;
+  text-align: left;
 }
 
 .my-menu-item:last-child {
   border-bottom: none;
 }
 
-.my-menu-ic {
-  width: 27px;
-  height: 27px;
-  border-radius: 8px;
-  background: #f3f4f3;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  color: var(--ink-2);
-}
-
 .my-menu-lbl {
   flex: 1;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
 }
 
 .my-menu-sub {
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--ink-3);
 }

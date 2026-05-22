@@ -1,170 +1,195 @@
 /* ============================================================
-   Wish — 찜 (응원 농가)
+   Wish — 찜 (홈 톤)
    ============================================================ */
 
-.wish-screen {
+.ws {
   width: 390px;
   min-height: 100vh;
   margin: 0 auto;
-  background: var(--bg);
-  padding: 22px 20px 96px;
+  background: var(--card);
+  padding: 22px 20px 110px;
   color: var(--ink);
 }
 
-.w-hdr {
+/* 헤더 */
+.ws-hdr {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 13px;
+  margin-bottom: 16px;
 }
 
-.w-hdr h1 {
-  font-size: 22px;
+.ws-hdr h1 {
+  font-size: 24px;
   font-weight: 800;
+  letter-spacing: -0.6px;
   margin: 0;
 }
 
-.w-hdr span {
+.ws-count {
   font-size: 13px;
   color: var(--ink-3);
+  font-weight: 600;
 }
 
 /* 탭 */
-.w-tabs {
+.ws-tabs {
   display: flex;
-  gap: 7px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--line);
 }
 
-.w-tab {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  height: 33px;
-  padding: 0 13px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
-  font-size: 12px;
-  font-weight: 600;
+.ws-tab {
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--ink-3);
   cursor: pointer;
   font-family: inherit;
+  letter-spacing: -0.2px;
 }
 
-.w-tab.active {
-  background: var(--green);
-  border-color: var(--green);
-  color: #fff;
+.ws-tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--green);
 }
 
 /* 농가 카드 */
-.w-farm-card {
+.ws-card {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 13px;
-  padding: 13px;
-  margin-bottom: 9px;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
 }
 
-.w-farm-top {
+.ws-card-row {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.w-farm-emoji {
-  font-size: 34px;
-  flex-shrink: 0;
-  line-height: 1;
+.ws-card-left {
+  flex: 1;
 }
 
-.w-farm-name {
-  font-size: 14px;
+.ws-card-name {
+  font-size: 15px;
   font-weight: 800;
-  margin-bottom: 2px;
+  letter-spacing: -0.3px;
+  margin-bottom: 3px;
 }
 
-.w-farm-owner {
-  font-size: 11.5px;
+.ws-verified {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 11px;
+  color: var(--green);
+}
+
+.ws-card-owner {
+  font-size: 12px;
   color: var(--green);
   font-weight: 600;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
-.w-farm-region {
-  font-size: 10px;
-  color: var(--ink-3);
-  margin-bottom: 4px;
-}
-
-.w-farm-badge {
-  font-size: 9.5px;
-  font-weight: 700;
-  color: var(--red);
-  background: var(--red-soft);
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.w-farm-intro {
-  font-size: 12px;
-  color: var(--ink-2);
-  line-height: 1.5;
-  margin-bottom: 9px;
-}
-
-.w-farm-stats {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--ink-2);
-  margin-bottom: 9px;
-}
-
-.w-farm-stats span {
+.ws-card-region {
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  font-size: 11px;
+  color: var(--ink-3);
 }
 
-.w-farm-acts {
-  display: flex;
-  gap: 7px;
-}
-
-.w-act-btn {
-  flex: 1;
-  height: 35px;
-  border: 1px solid var(--line);
+.ws-heart {
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
-  background: #fff;
-  font-size: 12px;
-  font-weight: 700;
+  border: none;
+  background: var(--red-soft);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* 농부 인용문 */
+.ws-quote {
+  font-size: 12.5px;
   color: var(--ink-2);
+  line-height: 1.5;
+  margin: 0 0 12px;
+  padding-left: 10px;
+  border-left: 2px solid var(--green);
+  font-style: italic;
+}
+
+/* 통계 */
+.ws-stats {
   display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.ws-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+/* 액션 */
+.ws-acts {
+  display: flex;
+  gap: 8px;
+}
+
+.ws-btn {
+  flex: 1;
+  height: 38px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-2);
   cursor: pointer;
   font-family: inherit;
 }
 
-.w-act-btn.primary {
+.ws-btn.primary {
   background: var(--green);
   border-color: var(--green);
   color: #fff;
 }
 
-.w-empty {
-  padding: 30px 20px;
+/* 빈 상태 */
+.ws-empty {
+  padding: 36px 16px;
   text-align: center;
-  color: var(--ink-3);
   font-size: 12.5px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 13px;
+  color: var(--ink-3);
+  background: var(--bg);
+  border-radius: 12px;
+}
+
+.ws-empty strong {
+  color: var(--ink);
+  font-weight: 700;
 }

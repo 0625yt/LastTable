@@ -1,14 +1,23 @@
-// My.jsx — 사용자 프로필 / 통계 / 뱃지 / 메뉴
+// My.jsx — 프로필 / 통계 / 뱃지 / 메뉴 (홈 톤)
 //
-// 데모용 단일 사용자(그린님). 회원/로그인은 발표 후 v2 예정.
+// 데모용 단일 사용자(그린님). 회원/로그인은 발표 후 v2.
 
-import { User, Sprout, Recycle, Trees, Package, Heart, Award, ChevronRight } from "lucide-react";
+import {
+  User,
+  Sprout,
+  Recycle,
+  Trees,
+  Package,
+  Heart,
+  Award,
+  ChevronRight,
+} from "lucide-react";
 import "./My.css";
 
 const STATS = [
-  { ic: <Sprout size={14} />,  num: "12",            label: "응원 농가",  color: "g" },
-  { ic: <Recycle size={14} />, num: "9.3",  unit: "kg", label: "CO₂ 절감",  color: "r" },
-  { ic: <Trees size={14} />,   num: "14",            label: "나무 환산",  color: "a" },
+  { ic: <Sprout size={14} />,  num: "12",  label: "응원 농가" },
+  { ic: <Recycle size={14} />, num: "9.3", unit: "kg", label: "CO₂ 절감" },
+  { ic: <Trees size={14} />,   num: "14",  label: "나무 환산" },
 ];
 
 const MONTHLY = [
@@ -20,46 +29,41 @@ const MONTHLY = [
 ];
 
 const CONTRIBS = [
-  { num: "7",       label: "건 직거래로\n탄소 절감" },
-  { num: "23",      label: "kg 못난이\n폐기 막음" },
-  { num: "₩3,200",  label: "환경 단체\n누적 기부" },
+  { num: "7",      label: "건 직거래" },
+  { num: "23kg",   label: "못난이 폐기 절감" },
+  { num: "3,200",  label: "원 기부 누적" },
 ];
 
 const BADGES = [
-  { em: "🌱", nm: "첫 직거래",      locked: false },
-  { em: "🌿", nm: "못난이 구원자",  locked: false },
-  { em: "🌳", nm: "탄소 절감 10kg", locked: false },
-  { em: "🏆", nm: "농가 응원 10곳", locked: true },
-  { em: "🦋", nm: "기후 챔피언",    locked: true },
-  { em: "⭐", nm: "리뷰 마스터",     locked: true },
+  { nm: "첫 직거래",        locked: false },
+  { nm: "못난이 구원자",    locked: false },
+  { nm: "탄소 절감 10kg",   locked: false },
+  { nm: "농가 응원 10곳",   locked: true },
+  { nm: "기후 챔피언",      locked: true },
+  { nm: "리뷰 마스터",       locked: true },
 ];
 
-const MENU = [
-  { ic: <Package size={12} />, lbl: "주문 내역", sub: "총 7건" },
-  { ic: <Heart size={12} />,   lbl: "찜 목록",   sub: "3개" },
-  { ic: <Award size={12} />,   lbl: "나의 뱃지", sub: "3/6 획득" },
-];
-
-function My() {
+function My({ onNavigate }) {
   return (
-    <div className="my-screen">
+    <div className="my">
+      {/* 프로필 헤더 */}
       <div className="my-profile">
         <div className="my-avatar">
           <User size={22} color="#fff" />
         </div>
-        <div>
+        <div className="my-profile-info">
           <div className="my-name">그린님</div>
-          <div className="my-email">green@lasttable.com</div>
-          <div className="my-joined">2025년 3월부터 함께해요</div>
+          <div className="my-meta">green@lasttable.com · 가입 2025.03</div>
         </div>
-        <div className="my-edit">편집</div>
+        <button className="my-edit">편집</button>
       </div>
 
+      {/* 통계 3개 */}
       <div className="my-stats">
         {STATS.map(function (s, i) {
           return (
             <div className="my-stat" key={i}>
-              <div className={"my-stat-ic " + s.color}>{s.ic}</div>
+              <div className="my-stat-ic">{s.ic}</div>
               <div className="my-stat-num">
                 {s.num}
                 {s.unit && <small>{s.unit}</small>}
@@ -70,14 +74,15 @@ function My() {
         })}
       </div>
 
-      <div className="my-chart-card">
-        <div className="my-chart-title">월별 탄소 절감</div>
-        <div className="my-chart">
+      {/* 월별 탄소 절감 차트 */}
+      <div className="my-chart">
+        <div className="my-chart-h">월별 탄소 절감</div>
+        <div className="my-bars">
           {MONTHLY.map(function (m) {
             return (
-              <div className="my-bar-wrap" key={m.m}>
+              <div className="my-bar-col" key={m.m}>
                 <div className="my-bar-val">{m.v}</div>
-                <div className="my-bar-bg" style={{ height: 64 }}>
+                <div className="my-bar-bg">
                   <div className="my-bar-fill" style={{ height: m.pct + "%" }} />
                 </div>
                 <div className="my-bar-lbl">{m.m}</div>
@@ -85,51 +90,63 @@ function My() {
             );
           })}
         </div>
-        <div style={{ fontSize: 9.5, color: "var(--ink-3)", textAlign: "right" }}>
-          단위: kg CO₂
-        </div>
+        <div className="my-chart-unit">kg CO₂</div>
       </div>
 
+      {/* 환경 기여 */}
       <div className="my-contrib">
-        <div className="my-contrib-hdr">🌿 나의 환경 기여</div>
-        <div className="my-contrib-items">
+        <div className="my-contrib-h">나의 환경 기여</div>
+        <div className="my-contrib-row">
           {CONTRIBS.map(function (c, i) {
             return (
-              <div className="my-contrib-row" key={i}>
-                {i > 0 && <div className="my-contrib-div" />}
-                <div className="my-contrib-item">
-                  <span className="my-contrib-num">{c.num}</span>
-                  <span className="my-contrib-lbl" style={{ whiteSpace: "pre-line" }}>{c.label}</span>
-                </div>
+              <div className="my-contrib-item" key={i}>
+                <div className="my-contrib-num">{c.num}</div>
+                <div className="my-contrib-lbl">{c.label}</div>
               </div>
             );
           })}
         </div>
       </div>
 
-      <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 8 }}>나의 뱃지</div>
+      {/* 뱃지 */}
+      <div className="my-section-h">나의 뱃지 <span>3 / 6</span></div>
       <div className="my-badges">
-        {BADGES.map(function (b, i) {
+        {BADGES.map(function (b) {
           return (
-            <div key={i} className={"my-badge" + (b.locked ? " locked" : "")}>
-              <div className="my-badge-em">{b.em}</div>
+            <div key={b.nm} className={"my-badge" + (b.locked ? " locked" : "")}>
+              <Award size={18} color={b.locked ? "var(--ink-3)" : "var(--green)"} />
               <div className="my-badge-nm">{b.nm}</div>
             </div>
           );
         })}
       </div>
 
+      {/* 메뉴 */}
       <div className="my-menu">
-        {MENU.map(function (m, i) {
-          return (
-            <div className="my-menu-item" key={i}>
-              <div className="my-menu-ic">{m.ic}</div>
-              <div className="my-menu-lbl">{m.lbl}</div>
-              <div className="my-menu-sub">{m.sub}</div>
-              <ChevronRight size={13} color="var(--ink-3)" />
-            </div>
-          );
-        })}
+        <button
+          className="my-menu-item"
+          onClick={function () { onNavigate && onNavigate("market"); }}
+        >
+          <Package size={14} color="var(--ink-2)" />
+          <span className="my-menu-lbl">주문 내역</span>
+          <span className="my-menu-sub">총 7건</span>
+          <ChevronRight size={14} color="var(--ink-3)" />
+        </button>
+        <button
+          className="my-menu-item"
+          onClick={function () { onNavigate && onNavigate("wish"); }}
+        >
+          <Heart size={14} color="var(--ink-2)" />
+          <span className="my-menu-lbl">찜 목록</span>
+          <span className="my-menu-sub">3개</span>
+          <ChevronRight size={14} color="var(--ink-3)" />
+        </button>
+        <button className="my-menu-item">
+          <Award size={14} color="var(--ink-2)" />
+          <span className="my-menu-lbl">나의 뱃지</span>
+          <span className="my-menu-sub">3/6 획득</span>
+          <ChevronRight size={14} color="var(--ink-3)" />
+        </button>
       </div>
     </div>
   );

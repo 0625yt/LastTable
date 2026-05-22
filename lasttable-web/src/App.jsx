@@ -13,7 +13,6 @@ import {
   ArrowDownRight,
   ChevronRight,
   Sprout,
-  Camera,
   ShoppingBag,
   Heart,
   Home as HomeIcon,
@@ -27,7 +26,6 @@ import DetailDisappearing from "./DetailDisappearing";
 import Rising from "./Rising";
 import Market from "./Market";
 import AiMatch from "./AiMatch";
-import CameraScreen from "./Camera";
 import Wish from "./Wish";
 import My from "./My";
 
@@ -103,7 +101,12 @@ function App() {
 
   // 상세 화면이면 그것만 렌더
   if (view === "disappearing") {
-    return <DetailDisappearing onBack={function () { setView("home"); }} />;
+    return (
+      <DetailDisappearing
+        onBack={function () { setView("home"); }}
+        onNavigate={setView}
+      />
+    );
   }
   if (view === "rising") {
     return <Rising onBack={function () { setView("home"); }} />;
@@ -111,7 +114,7 @@ function App() {
   if (view === "market") {
     return (
       <>
-        <Market />
+        <Market onNavigate={setView} />
         <BottomTabs current="market" onChange={setView} />
       </>
     );
@@ -119,23 +122,15 @@ function App() {
   if (view === "ai") {
     return (
       <>
-        <AiMatch />
+        <AiMatch onNavigate={setView} />
         <BottomTabs current="ai" onChange={setView} />
-      </>
-    );
-  }
-  if (view === "camera") {
-    return (
-      <>
-        <CameraScreen />
-        <BottomTabs current="camera" onChange={setView} />
       </>
     );
   }
   if (view === "wish") {
     return (
       <>
-        <Wish />
+        <Wish onNavigate={setView} />
         <BottomTabs current="wish" onChange={setView} />
       </>
     );
@@ -143,7 +138,7 @@ function App() {
   if (view === "my") {
     return (
       <>
-        <My />
+        <My onNavigate={setView} />
         <BottomTabs current="my" onChange={setView} />
       </>
     );
@@ -242,11 +237,16 @@ function App() {
           </div>
         </div>
 
-        <div className="sub-card">
-          <div className="ic"><Camera size={16} /></div>
+        <div
+          className="sub-card"
+          onClick={function () { setView("ai"); }}
+          style={{ cursor: "pointer" }}
+          role="button"
+        >
+          <div className="ic"><Sparkles size={16} /></div>
           <div>
-            <div className="label">AI 식재료 분석</div>
-            <div className="hint">사진 한 장 ›</div>
+            <div className="label">AI 매칭</div>
+            <div className="hint">자연어로 물어보기 ›</div>
           </div>
         </div>
       </div>
@@ -304,10 +304,9 @@ function BottomTabs({ current, onChange }) {
     );
   }
   return (
-    <nav className="tabbar six">
+    <nav className="tabbar five">
       {tab("home",   "홈",   <HomeIcon size={20} />)}
       {tab("market", "마켓", <Store size={20} />)}
-      {tab("camera", "촬영", <Camera size={20} />)}
       {tab("ai",     "AI",   <Sparkles size={20} />, <span className="ai-dot" />)}
       {tab("wish",   "찜",   <Heart size={20} />)}
       {tab("my",     "MY",   <User size={20} />)}

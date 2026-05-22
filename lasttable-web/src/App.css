@@ -355,9 +355,8 @@ body {
   grid-template-columns: repeat(5, 1fr);
 }
 
-/* AI 탭이 추가된 6칸 버전 */
-.tabbar.six {
-  grid-template-columns: repeat(6, 1fr);
+.tabbar.five {
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .tab {

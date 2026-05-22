@@ -5,19 +5,24 @@
 // 을 보여준다. ML 회귀모델(KOSIS + 기상청 ASOS + SSP5-8.5 학습) 결과.
 
 import { useEffect, useState } from "react";
-import { ChevronLeft, Info } from "lucide-react";
+import { ChevronLeft, Info, TrendingUp, TrendingDown } from "lucide-react";
 import "./Rising.css";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
 
-// 슬러그 → 한글/이모지 매핑 (FruitItem.java 와 동일)
-const FRUIT_META = {
-  apple:    { name: "사과",    emoji: "🍎" },
-  pear:     { name: "배",      emoji: "🍐" },
-  peach:    { name: "복숭아",  emoji: "🍑" },
-  grape:    { name: "포도",    emoji: "🍇" },
-  mandarin: { name: "감귤",    emoji: "🍊" },
+const FRUIT_NAME = {
+  apple:    "사과",
+  pear:     "배",
+  peach:    "복숭아",
+  grape:    "포도",
+  mandarin: "감귤",
+  mango:    "망고",
+  banana:   "바나나",
+  olive:    "올리브",
 };
+
+// 아열대 신규작물 — UI 에 "NEW" 뱃지로 강조
+const TROPICAL = new Set(["mango", "banana", "olive"]);
 
 const BASE_YEAR = 2025;
 const TARGET_YEAR = 2050;
@@ -29,7 +34,7 @@ function Rising({ onBack }) {
     const url = API_BASE
       + "/api/fruits/rising?base=" + BASE_YEAR
       + "&target=" + TARGET_YEAR
-      + "&limit=5";
+      + "&limit=8";
     fetch(url)
       .then(function (r) { return r.json(); })
       .then(function (rows) {
@@ -48,13 +53,13 @@ function Rising({ onBack }) {
         </button>
         <div className="r-title-wrap">
           <h1>새로 자라는 작물</h1>
-          <p>ML 회귀모델이 예측한 미래 재배량 TOP 5</p>
+          <p>ML 회귀모델이 예측한 미래 재배량 TOP 8</p>
         </div>
       </div>
 
       <div className="r-card">
         <div className="r-card-hdr">
-          <span className="r-tag">🤖 ML FORECAST</span>
+          <span className="r-tag">ML FORECAST</span>
           <span className="r-period">{BASE_YEAR} → {TARGET_YEAR}</span>
         </div>
         <div className="r-card-title">25년 뒤, 어떤 과일이 늘어날까?</div>
@@ -73,14 +78,19 @@ function Rising({ onBack }) {
         {!state.loading && !state.error && (
           <div className="r-list">
             {state.items.map(function (row, i) {
-              const meta = FRUIT_META[row.fruitSlug] || { name: row.fruitSlug, emoji: "🌱" };
+              const name = FRUIT_NAME[row.fruitSlug] || row.fruitSlug;
               const isUp = row.growthPct >= 0;
+              const Arrow = isUp ? TrendingUp : TrendingDown;
               return (
                 <div className="r-row" key={row.fruitSlug}>
                   <div className="r-rank">0{i + 1}</div>
-                  <div className="r-em">{meta.emoji}</div>
                   <div className="r-mid">
-                    <div className="r-name">{meta.name}</div>
+                    <div className="r-name">
+                      {name}
+                      {TROPICAL.has(row.fruitSlug) && (
+                        <span className="r-badge-new">NEW</span>
+                      )}
+                    </div>
                     <div className="r-ton">
                       {Math.round(row.baseTon).toLocaleString()}톤
                       {" → "}
@@ -88,6 +98,7 @@ function Rising({ onBack }) {
                     </div>
                   </div>
                   <div className={"r-pct " + (isUp ? "up" : "down")}>
+                    <Arrow size={13} strokeWidth={2.5} />
                     {isUp ? "+" : "−"}{Math.abs(row.growthPct).toFixed(1)}%
                   </div>
                 </div>
@@ -104,10 +115,14 @@ function Rising({ onBack }) {
       </div>
 
       <div className="r-note">
-        <div className="r-note-h">왜 감귤만 늘어날까?</div>
+        <div className="r-note-h">왜 망고·바나나·올리브가 등장할까?</div>
         SSP5-8.5 시나리오에서 한반도 평균기온이 2050년까지 약 +1.8℃ 상승합니다.
-        감귤은 아열대 작물이라 적정 재배지가 북상하며 면적이 늘어나고,
-        사과·배·포도·복숭아는 적정 기온 구간을 벗어나기 시작합니다.
+        제주·전남·경남 일부 지역이 아열대 기후대로 진입하면서
+        망고·바나나·올리브 재배 적지가 새로 생겨납니다.
+        반면 사과·배·포도·복숭아는 적정 기온 구간을 벗어나기 시작합니다.
+        <div className="r-note-foot">
+          ※ 망고·바나나·올리브 수치는 SSP5-8.5 기온 상승 추정에 따른 시뮬레이션값 (실측치 아님)
+        </div>
       </div>
     </div>
   );

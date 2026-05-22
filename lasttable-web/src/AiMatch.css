@@ -118,6 +118,95 @@
   color: var(--red);
 }
 
+/* 추천 상품 카드 (LLM 응답에 매칭된 마켓 상품) */
+.ai-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ai-recs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 84%;
+  align-self: flex-start;
+}
+
+.ai-rec {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--green-line);
+  border-left: 3px solid var(--green);
+  border-radius: 11px;
+  cursor: pointer;
+}
+
+.ai-rec-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-rec-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  margin-bottom: 2px;
+}
+
+.ai-rec-region {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  color: var(--ink-3);
+  margin-bottom: 4px;
+}
+
+.ai-rec-price-line {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-rec-disc {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--red);
+}
+
+.ai-rec-price {
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.ai-rec-unit {
+  font-size: 10.5px;
+  color: var(--ink-3);
+}
+
+.ai-rec-more {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green);
+  background: var(--green-soft);
+  border: 1px solid var(--green-line);
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
 /* 타이핑 인디케이터 */
 .ai-typing {
   align-self: flex-start;

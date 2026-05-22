@@ -65,3 +65,4 @@ tmp/
 .vercel
 .playwright-mcp/
 detail-*.png
+smoke-*.png

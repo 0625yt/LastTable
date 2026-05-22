@@ -6,28 +6,30 @@
 // 사용자가 빨리 클릭하는 동선을 위해 추천 질문 칩 4개도 제공.
 
 import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles } from "lucide-react";
+import { Send, Sparkles, ShoppingBag, ChevronRight, MapPin } from "lucide-react";
 import "./AiMatch.css";
+import ProductDetail from "./ProductDetail";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
 
 const SUGGESTIONS = [
-  "주말 2인 저녁 추천",
-  "2만원으로 일주일 장보기",
+  "오늘 사과 사고 싶은데 추천해줘",
+  "3만원으로 4인 가족 한 주 식단",
+  "주말 2인 저녁 메뉴",
   "사라지는 작물 응원하기",
-  "우리 동네 농가",
 ];
 
 const GREETING = {
   role: "bot",
   text:
-    "안녕하세요 👋\n오늘은 어떤 식탁을 차리실 건가요?\n\n자연어로 물어보시면 기후 위험 작물·농가 재고·못난이 매물을 한 번에 추천해드려요.",
+    "안녕하세요. 오늘은 어떤 식탁을 차리실 건가요?\n자연어로 물어보시면 기후 위험 작물·농가 재고·못난이 매물을 한 번에 추천해드려요.",
 };
 
-function AiMatch() {
+function AiMatch({ onNavigate }) {
   const [messages, setMessages] = useState([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [selected, setSelected] = useState(null);
   const bodyRef = useRef(null);
 
   // 새 메시지가 들어올 때마다 자동 스크롤
@@ -57,7 +59,13 @@ function AiMatch() {
         return r.json();
       })
       .then(function (data) {
-        setMessages(function (m) { return m.concat([{ role: "bot", text: data.reply || "(빈 응답)" }]); });
+        setMessages(function (m) {
+          return m.concat([{
+            role: "bot",
+            text: data.reply || "(빈 응답)",
+            recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
+          }]);
+        });
       })
       .catch(function (err) {
         setMessages(function (m) {
@@ -87,12 +95,55 @@ function AiMatch() {
       <div className="ai-body" ref={bodyRef}>
         {messages.map(function (m, i) {
           return (
-            <div
-              key={i}
-              className={"ai-msg " + m.role + (m.error ? " err" : "")}
-              style={{ whiteSpace: "pre-wrap" }}
-            >
-              {m.text}
+            <div key={i} className="ai-bubble-wrap">
+              <div
+                className={"ai-msg " + m.role + (m.error ? " err" : "")}
+                style={{ whiteSpace: "pre-wrap" }}
+              >
+                {m.text}
+              </div>
+              {m.recommendations && m.recommendations.length > 0 && (
+                <div className="ai-recs">
+                  {m.recommendations.map(function (r) {
+                    const p = r.payload || {};
+                    return (
+                      <div
+                        key={r.slug}
+                        className="ai-rec"
+                        role="button"
+                        onClick={function () { setSelected(r); }}
+                      >
+                        <div className="ai-rec-body">
+                          <div className="ai-rec-title">{r.title}</div>
+                          {p.region && (
+                            <div className="ai-rec-region">
+                              <MapPin size={10} /> {p.region}
+                            </div>
+                          )}
+                          <div className="ai-rec-price-line">
+                            {p.discountPct && (
+                              <span className="ai-rec-disc">{p.discountPct}%</span>
+                            )}
+                            <span className="ai-rec-price">
+                              {(p.price || 0).toLocaleString()}원
+                            </span>
+                            {p.unit && <span className="ai-rec-unit"> / {p.unit}</span>}
+                          </div>
+                        </div>
+                        <ChevronRight size={14} color="var(--ink-3)" />
+                      </div>
+                    );
+                  })}
+                  <button
+                    className="ai-rec-more"
+                    onClick={function () { onNavigate && onNavigate("market"); }}
+                  >
+                    <ShoppingBag size={12} />
+                    마켓에서 더 보기
+                    <ChevronRight size={12} />
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
@@ -146,6 +197,10 @@ function AiMatch() {
           <Send size={16} />
         </button>
       </div>
+
+      {selected && (
+        <ProductDetail item={selected} onClose={function () { setSelected(null); }} />
+      )}
     </div>
   );
 }
