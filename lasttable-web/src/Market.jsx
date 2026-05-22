@@ -16,6 +16,7 @@ import {
   ShoppingBag,
   Star,
   MapPin,
+  Leaf,
 } from "lucide-react";
 import "./Market.css";
 import ProductDetail from "./ProductDetail";
@@ -93,6 +94,12 @@ function Market({ onNavigate }) {
       <div className="mk-search">
         <Search size={14} color="var(--ink-3)" />
         <span>농가, 품목, 지역 검색</span>
+      </div>
+
+      {/* 약속 띠 — 모든 구매에 적용되는 환경 기여 */}
+      <div className="mk-pledge">
+        <Leaf size={11} strokeWidth={2.5} />
+        모든 구매의 <strong>5%</strong>가 환경보호 활동에 사용됩니다
       </div>
 
       {/* AI 매칭 풀폭 카드 — 클릭 시 AI 탭으로 */}

@@ -12,8 +12,22 @@ import {
   Sprout,
   Truck,
   Award,
+  Leaf,
+  Heart,
 } from "lucide-react";
 import "./ProductDetail.css";
+
+// 구매 1건의 임팩트 환산 (데모용 가정)
+//   - 못난이 농산물 1kg 당 약 0.7kg CO₂ 절감 (폐기 회피분)
+//   - 결제 금액의 5% 가 환경보호 활동(숲 조성·기후 캠페인)에 사용됨
+const CO2_PER_KG = 0.7;
+const DONATION_RATE = 0.05;
+
+function parseUnitKg(unit) {
+  if (!unit) return 1;
+  const m = String(unit).match(/([\d.]+)\s*kg/i);
+  return m ? parseFloat(m[1]) : 1;
+}
 
 function ProductDetail({ item, onClose }) {
   // ESC 키로 닫기
@@ -26,6 +40,12 @@ function ProductDetail({ item, onClose }) {
   if (!item) return null;
   const p = item.payload || {};
   const isClimateRisk = Boolean(p.kosisTag);
+
+  // 환경 임팩트 계산 — 가격·단위에서 자동 산출
+  const price = p.price || 0;
+  const kg = parseUnitKg(p.unit);
+  const co2Saved = (kg * CO2_PER_KG).toFixed(1);
+  const donation = Math.round(price * DONATION_RATE);
 
   function handleBuy() {
     alert(
@@ -70,6 +90,31 @@ function ProductDetail({ item, onClose }) {
               정가 {p.origPrice.toLocaleString()}원
             </div>
           )}
+        </div>
+
+        {/* 임팩트 박스 — 구매 = 탄소 절감 + 환경보호 기부 */}
+        <div className="pd-impact">
+          <div className="pd-impact-h">이 상품 구매 시</div>
+          <div className="pd-impact-row">
+            <div className="pd-impact-item">
+              <div className="pd-impact-ic"><Leaf size={13} /></div>
+              <div>
+                <div className="pd-impact-num">{co2Saved}kg</div>
+                <div className="pd-impact-lbl">CO₂ 절감</div>
+              </div>
+            </div>
+            <div className="pd-impact-divider" />
+            <div className="pd-impact-item">
+              <div className="pd-impact-ic"><Heart size={13} /></div>
+              <div>
+                <div className="pd-impact-num">{donation.toLocaleString()}원</div>
+                <div className="pd-impact-lbl">환경보호 기부</div>
+              </div>
+            </div>
+          </div>
+          <div className="pd-impact-foot">
+            결제 금액의 5%가 숲 조성·기후 캠페인에 사용됩니다
+          </div>
         </div>
 
         {/* 평점·후기 */}
@@ -121,7 +166,8 @@ function ProductDetail({ item, onClose }) {
         {/* CTA */}
         <button className="pd-buy" onClick={handleBuy}>
           <ShoppingBag size={15} />
-          {(p.price || 0).toLocaleString()}원 구매하기
+          {price.toLocaleString()}원 구매하기
+          <span className="pd-buy-sub">· 기부 포함</span>
         </button>
         <div className="pd-demo-note">데모용 화면입니다 — 실제 결제는 진행되지 않습니다</div>
       </div>

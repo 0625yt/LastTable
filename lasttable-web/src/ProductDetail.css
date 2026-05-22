@@ -141,6 +141,77 @@
   margin-top: 4px;
 }
 
+/* 임팩트 박스 */
+.pd-impact {
+  background: #fff;
+  border: 1px solid var(--green-line);
+  border-radius: 13px;
+  padding: 12px 14px 11px;
+  margin-bottom: 14px;
+}
+
+.pd-impact-h {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--green);
+  letter-spacing: 0.2px;
+  margin-bottom: 8px;
+}
+
+.pd-impact-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-impact-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-impact-ic {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--green-soft);
+  color: var(--green);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.pd-impact-num {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.pd-impact-lbl {
+  font-size: 10.5px;
+  color: var(--ink-3);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.pd-impact-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--line);
+}
+
+.pd-impact-foot {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--green-line);
+  font-size: 10.5px;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
 /* 평점 */
 .pd-rating-row {
   display: flex;
@@ -251,6 +322,13 @@
 
 .pd-buy:active {
   background: #245d3a;
+}
+
+.pd-buy-sub {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.85;
+  margin-left: 4px;
 }
 
 .pd-demo-note {

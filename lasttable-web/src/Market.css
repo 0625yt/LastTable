@@ -54,8 +54,28 @@
   border-radius: 12px;
   font-size: 13px;
   color: var(--ink-3);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
+
+/* 약속 띠 — 모든 구매 → 환경보호 */
+.mk-pledge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--green-soft);
+  border: 1px solid var(--green-line);
+  border-radius: 10px;
+  color: var(--ink-2);
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+.mk-pledge svg { color: var(--green); flex-shrink: 0; }
+.mk-pledge strong { color: var(--green); font-weight: 800; }
 
 /* ────────── AI 매칭 풀폭 카드 (홈 메인카드 스타일) ────────── */
 .mk-ai {
