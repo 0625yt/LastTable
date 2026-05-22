@@ -1,226 +1,337 @@
 # Last Table
 
-> 버려지는 못난이 식재료를 구하고,
-> 기후로 바뀌는 식탁을 보여주며,
-> 농부와 음식점을 AI로 연결하는 서비스.
+> **사라지는 식재료를 알리고, AI가 농가와 소비자를 연결하고, 소비가 곧 환경 행동이 되는 서비스.**
 
-## 프로젝트 개요
+기후변화로 점점 줄어드는 국내 작물을 KOSIS 실시간 데이터로 보여주고, ML 회귀모델로 25년 뒤 재배 지형의 변화를 예측하며, Claude AI 챗봇이 사용자의 식탁 고민을 못난이 농가 직거래까지 한 번에 연결합니다.
 
-| 탭 | 역할 |
-|----|------|
-| ① 홈 (시각화) | 한국 지도 위 작물 분포를 2025 → 2090 슬라이더로 시각화 |
-| ② 연결 (마켓) | 농부·식재료 카드 + LLM 매칭 챗봇, 못난이 마켓 |
-| ③ 촬영 (카메라 AI) | 식재료 촬영 → 작물 인식 + 위험도/대체작물 안내 |
-| ④ MY (리포트) | 응원 농가 수, 환경 기부 누계 |
+🌐 **배포 URL**: <https://green-table.vercel.app>
+📦 **GitHub**: <https://github.com/0625yt/LastTable>
 
-## 현재 저장소 범위
+---
 
-이 저장소에는 두 개의 프로젝트가 들어 있습니다.
+## 🏆 두유톤 2026 해커톤 출품작
 
-| 폴더 | 역할 | 스택 |
-|------|------|------|
-| `lasttable-api/` | 백엔드 API 서버 + JSON 뷰어 정적 페이지 | Java 21 + Spring Boot 3.5 (Gradle wrapper 포함) |
-| `lasttable-web/` | 모바일 홈 화면 (그린테이블) | Node 22 + Vite + React |
+| 항목 | 내용 |
+|---|---|
+| 주제 | AI를 활용한 지속 가능한 환경 및 생활 문제 해결 서비스 |
+| 분야 | 환경 · 농업 · 기후데이터 · 커머스 |
+| AI 활용 | Anthropic Claude (실시간 자연어 매칭) + ML 회귀 예측 + 가격 탄력성 분석 |
+| 차별점 | 기후데이터 + 농가 직거래 + LLM 챗봇을 통합한 시장 최초 조합 |
 
-KOSIS(통계청) 공공데이터에서 작물·수산 양식 생산량 정보를 가져와
-프론트엔드 화면에 제공합니다.
+### 기존 서비스와의 차별점
 
-## 디렉터리 구조
+| 기존 서비스 | LastTable 차별점 |
+|---|---|
+| 어글리어스 | 못난이만 → LastTable은 **못난이 + 농부 + 기후데이터** 통합 |
+| 마켓컬리 | 농산물 커머스만 → **LLM 매칭 챗봇으로 자연어 직거래** 추가 |
+| 농촌진흥청 시스템 | 데이터 제공만 → **시각화 + 커머스 + AI** 통합 |
+
+---
+
+## 🎯 핵심 기능 (Win-Critical)
+
+### 1. 사라지는 식재료 (KOSIS 실시간)
+- 통계청 KOSIS Open API에서 10종 작물의 최근 3년치 생산량을 실시간 수집
+- 전년 대비 감소량 TOP 3 자동 산출 → 메인 카드 + 상세 화면
+- 회귀 추세선으로 "약 N년 뒤 국내 생산 한계 도달" 자동 계산
+- 가격 탄력성 분석으로 "내년 평균 가격 +Y% (XXX원 → YYY원)" 예측
+
+### 2. 새로 자라는 작물 (ML 회귀 예측)
+- KOSIS 과실생산량(2011-2024) × 기상청 ASOS(기온·강수·일사) 학습 데이터 7,650행
+- SSP5-8.5 시나리오 기반 2025 → 2050 재배량 회귀 예측
+- 망고·바나나·올리브 등 아열대 신규 작물 등장 시뮬레이션 (정직성 주석 표기)
+
+### 3. AI 매칭 챗봇 (실제 Claude API)
+- Anthropic Claude Sonnet 4.5 실연동 (시나리오 하드코딩 아님)
+- 시스템 프롬프트에 마켓 재고 자동 주입 → 응답 마커 파싱 → 상품 카드 자동 첨부
+- 자연어 한 줄 → 기후 위험 작물 + 농가 직거래 + 가격대 매칭 한 번에
+
+### 4. 못난이 마켓 + 환경보호 기부
+- Supabase 기반 데모 농산물·농가·기부 카탈로그
+- 상품 상세 모달: 가격 자동 환산으로 "X kg CO₂ 절감 + Y원 환경보호 기부"
+- 결제 금액의 5%가 숲 조성·기후 캠페인에 사용된다는 약속 일관 표시
+
+---
+
+## 🛠 기술 스택
+
+### Frontend (`lasttable-web/`)
+| 항목 | 사용 기술 |
+|---|---|
+| 언어/런타임 | JavaScript (ES2022) · Node 22 |
+| 프레임워크 | React 19 + Vite 7 |
+| UI 라이브러리 | lucide-react (아이콘) · chart.js + react-chartjs-2 (그래프) |
+| 스타일 | Vanilla CSS (390px 모바일 고정폭, 디자인 시스템 변수 기반) |
+| 배포 | Vercel (자동 빌드 + Production Promotion) |
+
+### Backend (`lasttable-api/`)
+| 항목 | 사용 기술 |
+|---|---|
+| 언어/런타임 | Java 21 (Temurin) |
+| 프레임워크 | Spring Boot 3.5 (WebFlux WebClient · Web MVC) |
+| 빌드 | Gradle 8 (wrapper 포함) |
+| 외부 연동 | KOSIS Open API · Anthropic Claude API · Supabase REST (PostgREST) |
+| 환경변수 | spring-dotenv (.env 자동 주입) |
+| 배포 | Render (Docker, 무료 티어) |
+
+### Data & Infra
+| 항목 | 사용 기술 |
+|---|---|
+| 데이터베이스 | Supabase (PostgreSQL 15 + Row Level Security) |
+| 외부 데이터 | KOSIS DT_1ET0292 (과실생산량) · DT_1EZ0007 (수산 양식) |
+| 미래 예측 | 기상청 ASOS 학습 + SSP5-8.5 시나리오 |
+| 자연어 AI | Anthropic Claude Sonnet 4.5 (1024 tokens, 시스템 프롬프트 + 마커 파싱) |
+| 버전관리 | Git · GitHub |
+
+### 개발 도구
+- VS Code · IntelliJ IDEA · Claude Code (AI pair-programming)
+- Playwright MCP (자동 E2E 스모크 테스트)
+
+---
+
+## 📱 화면 및 기능 (상세)
+
+전체 5탭 모바일 SPA (390px 고정폭). 모든 데이터 흐름은 백엔드 → 프론트엔드로 일관.
+
+### 홈 — 기후 위기 한눈에
+- **메인 카드**: KOSIS 실시간 TOP3 평균 감소율 (예: −4.0%) → 클릭 시 상세
+- **오늘의 인사이트**: 새로 자라는 작물 / AI 매칭 빠른 진입
+- **오늘 절약한 탄소**: 누적 환경 기여 요약
+- **지속 가능한 행동**: 못난이 마켓 · 환경 기부 카드
+
+### 사라지는 식재료 (상세) — `DetailDisappearing.jsx`
+1. **KOSIS 응답 도착 전**: shimmer 스켈레톤 (하드코딩 깜빡임 방지)
+2. **TOP3 카드**: 작물명 · 원인 한 줄 · 작년→올해 톤수 · 감소율 막대
+3. **생산량 vs 가격 차트**: chart.js로 5년 시계열 이중 축, TOP3 작물 탭으로 동적 전환
+4. **차트 요약**: 회귀 + 탄력성 자동 산출
+   - "약 N년 뒤 국내 생산 한계 도달"
+   - "내년 평균 가격 약 Y% 오른 ZZZ원/kg"
+5. **지역별 생산량**: 선택 작물의 시·도별 분포 + ↑ 표시 (북상·신규 산지)
+6. **배경**: 연평균기온 변화 · 재배면적 변동 · SSP5-8.5 장기 전망
+7. **다음 행동**: 못난이 마켓 / 새로 자라는 작물 / 환경 기여 보기 연결
+
+### 새로 자라는 작물 — `Rising.jsx`
+- ML 회귀 모델 (`ForecastService`) 기준 2025 → 2050 재배량 변화 TOP 8
+- 망고·바나나·올리브에 **NEW** 뱃지로 신규 작물 강조
+- "기상청 ASOS·KOSIS 학습 + SSP5-8.5 시나리오 기반 회귀 예측" 출처 명시
+- 정직성 주석: "망고·바나나·올리브 수치는 SSP5-8.5 기온 상승 추정에 따른 시뮬레이션값 (실측치 아님)"
+
+### 마켓 — `Market.jsx`
+- Supabase `demo_catalog` (kind=market) 실시간 조회 + 백엔드 다운 시 자동 fallback
+- 상단 약속 띠: "모든 구매의 5%가 환경보호 활동에 사용됩니다"
+- AI 매칭 풀폭 카드 → AI 챗봇으로 이동
+- 상품 카드: 기후 위험 작물(KOSIS 감소 품목)에 빨간 좌측 바 + 태그 표시
+- 카드 클릭 → 상품 상세 모달
+
+### 상품 상세 모달 — `ProductDetail.jsx`
+- 마켓 / AI 챗봇 추천 양쪽에서 동일 모달 재사용
+- 환경 임팩트 박스 (자동 산출):
+  - 단위×0.7kg → **N kg CO₂ 절감**
+  - 가격×5% → **Y 원 환경보호 기부**
+- 산지 직거래 · 산지 직배송 · 기후 위험 작물 응원 강점
+- 데모용 구매 CTA (`alert` 안내 + 모달 자동 닫힘)
+
+### AI 매칭 챗봇 — `AiMatch.jsx`
+- `POST /api/ai/match` → Anthropic Claude Sonnet 4.5 실시간 호출
+- 4개 추천 질문 칩 (사과 사고 싶은데 / 4인 식단 / 주말 2인 / 사라지는 작물)
+- 응답 본문 + 추천 상품 카드 자동 첨부 (시스템 프롬프트 마커 파싱)
+- 추천 카드 클릭 → 같은 상품 상세 모달
+- "마켓에서 더 보기" → 마켓 탭
+
+### 찜 — `Wish.jsx`
+- Supabase `demo_catalog` (kind=farmer) 응원 농가 목록
+- 농부 인용문 + 인증 마크 + 응원 누적
+- 직거래 보기 → 마켓 / 응원하기 (데모)
+
+### MY — `My.jsx`
+- 그린 풀폭 프로필 카드
+- 통계 3개: 응원 농가 · CO₂ 절감 · 나무 환산
+- 월별 탄소 절감 차트 (5개월 막대)
+- 환경 기여: 직거래 건수 · 못난이 폐기 절감 · 기부 누적
+- 뱃지 6종 (3 획득 · 3 잠금) · 주문 내역 · 찜 목록 · 나의 뱃지 메뉴
+
+---
+
+## 🏗 디렉터리 구조
 
 ```
 LastTable/
-├─ .gitignore
-├─ render.yaml                          # Render(백엔드) Blueprint
-├─ lasttable-api/                       # Spring Boot 백엔드 (Java 21)
-│  ├─ Dockerfile                        # Render용 컨테이너 빌드
+├─ README.md                     # 이 파일
+├─ render.yaml                   # Render Blueprint (백엔드 배포)
+├─ db/                           # Supabase 마이그레이션
+│  ├─ V1__init.sql               # 테이블: fruit · production_actual · production_forecast · demo_catalog
+│  ├─ V2__seed_fruit.sql         # 10종 작물 마스터
+│  ├─ V3__seed_demo.sql          # 마켓 3 + 농가 3 + 기부 3 = 9 행
+│  ├─ V4__rls_policy.sql         # anon SELECT 정책
+│  └─ ALL_INIT.sql               # 한 번에 실행용 합본
+│
+├─ lasttable-api/                # Spring Boot 백엔드 (Java 21)
+│  ├─ Dockerfile                 # Render 컨테이너 빌드
+│  ├─ build.gradle.kts
 │  └─ src/main/
 │     ├─ resources/
-│     │  └─ application.yml             # 설정 (KOSIS 키 포함, 데모용)
+│     │  ├─ application.yml      # KOSIS · Anthropic · Supabase 설정
+│     │  └─ data/
+│     │     └─ future_fruit_production_predictions_v3.csv   # ML 학습 7,650 행
 │     └─ java/com/lasttable/api/
 │        ├─ LasttableApiApplication.java
-│        ├─ config/WebConfig.java       # CORS 설정
-│        ├─ kosis/                      # KOSIS API 호출 계층
-│        │  ├─ KosisProperties.java
+│        ├─ config/WebConfig.java                  # CORS
+│        ├─ kosis/                                 # KOSIS Open API 클라이언트
 │        │  ├─ KosisClient.java
+│        │  ├─ KosisProperties.java
 │        │  ├─ KosisRawItem.java
 │        │  └─ KosisApiException.java
-│        ├─ fruit/                      # 과실 생산량 도메인
-│        │  ├─ FruitItem.java
+│        ├─ fruit/                                 # 과실 생산량 도메인
+│        │  ├─ FruitItem.java                      # 10종 enum + KOSIS 항목코드
 │        │  ├─ FruitProduction.java
 │        │  ├─ FruitProductionService.java
-│        │  └─ FruitProductionController.java
-│        └─ aquaculture/                # 수산 양식 생산량 도메인
-│           ├─ AquacultureProduction.java
-│           ├─ AquacultureService.java
-│           └─ AquacultureController.java
-└─ lasttable-web/                       # Vite + React 프론트엔드
+│        │  └─ FruitProductionController.java      # /api/kosis/fruits
+│        ├─ aquaculture/                           # 수산 양식 생산량
+│        │  ├─ AquacultureProduction.java
+│        │  ├─ AquacultureService.java
+│        │  └─ AquacultureController.java          # /api/kosis/aquaculture
+│        ├─ forecast/                              # ML 회귀 예측 서비스
+│        │  ├─ ForecastService.java                # CSV 로드 + risingCrops()
+│        │  ├─ ForecastRow.java
+│        │  └─ ForecastController.java             # /api/fruits/rising
+│        ├─ supabase/
+│        │  └─ SupabaseClient.java                 # PostgREST WebClient 래퍼
+│        ├─ demo/
+│        │  └─ DemoCatalogController.java          # /api/demo/{kind}
+│        └─ ai/                                    # Anthropic Claude 연동
+│           ├─ AnthropicClient.java                # 529 재시도 백오프 포함
+│           ├─ ChatController.java                 # /api/ai/match (마켓 카탈로그 자동 주입 + 마커 파싱)
+│           ├─ ChatRequest.java
+│           └─ ChatResponse.java                   # {reply, model, recommendations}
+│
+└─ lasttable-web/                                  # Vite + React 프론트엔드
    ├─ vercel.json
+   ├─ package.json
    └─ src/
-      ├─ App.jsx / App.css              # 홈 화면
-      └─ DetailDisappearing.jsx / .css  # "사라지는 식재료" 상세
+      ├─ main.jsx · App.jsx · App.css              # 홈 + 5탭 라우팅
+      ├─ DetailDisappearing.jsx / .css             # 사라지는 식재료 상세
+      ├─ Rising.jsx / .css                         # 새로 자라는 작물
+      ├─ Market.jsx / .css                         # 못난이 마켓
+      ├─ AiMatch.jsx / .css                        # AI 매칭 챗봇
+      ├─ Wish.jsx / .css                           # 응원 농가
+      ├─ My.jsx / .css                             # 프로필·리포트
+      └─ ProductDetail.jsx / .css                  # 공통 상품 상세 모달
 ```
 
-## 개발 환경
+---
 
-| 도구 | 버전 | 설치 |
-|------|------|------|
-| JDK | **21 이상** | [Adoptium Temurin](https://adoptium.net/temurin/releases/?version=21) 또는 `brew install --cask temurin@21` |
-| Node.js | **20 이상** (22 권장) | [nodejs.org](https://nodejs.org/) 또는 `brew install node` |
-| Git | 최신 | [git-scm.com](https://git-scm.com/) 또는 `brew install git` |
-| IDE (선택) | IntelliJ IDEA Community / VS Code (Extension Pack for Java) | — |
+## 🚀 실행 방법
 
-Gradle은 따로 설치할 필요 없습니다. 프로젝트에 wrapper (`./gradlew`)가 포함되어 있어 자동으로 알맞은 버전을 받아 씁니다.
+### 사전 요구
 
-### 환경 확인
+| 도구 | 권장 버전 | 설치 |
+|---|---|---|
+| JDK | 21 이상 | `brew install --cask temurin@21` |
+| Node.js | 22 권장 | `brew install node` |
+| Git | 최신 | `brew install git` |
 
-```bash
-java -version    # openjdk 21.x.x 이상
-node --version   # v20.x 이상
-git --version    # 아무 버전이나
+### 환경변수 (`.env`)
+
+`lasttable-api/.env` (gitignored)
+```env
+ANTHROPIC_API_KEY=sk-ant-...
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_KEY=sb_publishable_...
 ```
 
-### 프로젝트 받기
-
-```bash
-git clone https://github.com/0625yt/LastTable.git
-cd LastTable
+`lasttable-web/.env.development`
+```env
+VITE_API_BASE=http://localhost:8080
 ```
 
-## 실행 방법
+### 1) Supabase 초기화 (최초 1회)
+1. <https://supabase.com> 무료 프로젝트 생성
+2. SQL Editor 에서 `db/ALL_INIT.sql` 실행 → 4개 테이블 + 시드 9 행 + RLS 정책
 
-백엔드와 프론트엔드를 각각 띄워야 합니다. 터미널 두 개 사용.
-
-### 1) 백엔드 (Spring Boot, 포트 8080)
-
-`application.yml` 에 KOSIS API 키가 박혀 있어 별도 설정 없이 바로 실행됩니다.
-
+### 2) 백엔드 (Spring Boot, 포트 8080)
 ```bash
 cd lasttable-api
 ./gradlew bootRun
 ```
-
-또는 IntelliJ에서 `LasttableApiApplication` 의 ▶ 버튼 클릭.
-
-성공 로그:
+성공 로그
 ```
 KOSIS_API_KEY loaded (prefix: OWUyNDE...)
-Started LasttableApiApplication in 0.7 seconds
+Anthropic 클라이언트 준비됨 (model=claude-sonnet-4-5, ...)
+Supabase 클라이언트 준비됨 (url=https://xxx...)
+forecast csv loaded: 7681 rows
 Tomcat started on port 8080
 ```
 
-> ⚠️ 이 키는 데모용으로 노출돼 있습니다. 본인 프로젝트로 활용한다면
-> https://kosis.kr/openapi 에서 본인 키를 새로 발급받아 교체하세요.
-
-### 2) 프론트엔드 (Vite + React, 포트 5173)
-
+### 3) 프론트엔드 (Vite + React, 포트 5173)
 ```bash
 cd lasttable-web
-npm install        # 최초 1회
+npm install
 npm run dev
 ```
+접속: <http://localhost:5173>
 
-접속: **http://localhost:5173/**
+---
 
-홈 화면이 뜨고, "🥕 생산량 감소 식재료" 카드가 백엔드에서 데이터를 받아
-실제 증감률을 표시합니다(나머지 카드는 더미 UI).
+## 🔌 REST API
 
-### 본인 키로 교체하려면
-
-`lasttable-api/src/main/resources/application.yml` 의 `api-key:` 값을 바꾸면 됩니다.
-
-```yaml
-kosis:
-  api-key: 여기에_본인_KOSIS_키_붙여넣기
-```
-
-또는 환경변수로 주입하고 싶다면 yml을 다음 형태로:
-```yaml
-kosis:
-  api-key: ${KOSIS_API_KEY}
-```
-실행 전 `export KOSIS_API_KEY=...` 또는 IntelliJ Run Configuration의
-Environment variables에 등록.
-
-## 사용 방법
-
-### 1. JSON 뷰어 페이지
-
-서버 실행 후 브라우저에서 접속:
-
-> **http://localhost:8080/**
-
-- 과일 / 연도 / 시도 드롭다운에서 고른 뒤 [조회] 버튼
-- 호출 URL, 응답 행 수, 원본 JSON 이 한 화면에 표시됨
-
-### 2. REST API 직접 호출
-
-#### 과실 생산량
-
+### KOSIS 실시간
 | Method | URL | 설명 |
-|--------|-----|------|
-| GET | `/api/kosis/fruits` | 지원하는 과일 목록 |
-| GET | `/api/kosis/fruits/{fruit}/production?years=5&region=서울특별시` | 과일·시도별 생산량 (region 생략 시 전국 시도 전체) |
+|---|---|---|
+| GET | `/api/kosis/fruits` | 지원 작물 10종 목록 |
+| GET | `/api/kosis/fruits/{slug}/production?years=3&region=계` | 작물별 생산량 시계열 |
+| GET | `/api/kosis/aquaculture/production?years=5&region=전라남도` | 시도별 양식 총생산량 |
 
-지원 과일 슬러그:
-`apple, pear, peach, grape, mandarin, persimmon, sweet-persimmon, astringent-persimmon, plum, japanese-apricot`
+지원 작물: `apple, pear, peach, grape, mandarin, persimmon, sweet-persimmon, astringent-persimmon, plum, japanese-apricot`
 
-```bash
-curl http://localhost:8080/api/kosis/fruits
-curl "http://localhost:8080/api/kosis/fruits/apple/production?years=3"
-curl "http://localhost:8080/api/kosis/fruits/mandarin/production?years=5&region=제주도"
-```
-
-```json
-[
-  { "fruit":"사과","regionCode":"00","regionName":"계","year":2025,"valueTon":447952.5984 },
-  { "fruit":"사과","regionCode":"11","regionName":"서울특별시","year":2025,"valueTon":0.1424 }
-]
-```
-
-#### 수산 양식 생산량
-
+### ML 예측
 | Method | URL | 설명 |
-|--------|-----|------|
-| GET | `/api/kosis/aquaculture/production?years=5&region=전라남도` | 시도별 양식 총생산량(M/T) |
+|---|---|---|
+| GET | `/api/fruits/rising?base=2025&target=2050&limit=8` | 미래 재배량 증가 TOP N (망고·바나나·올리브 포함) |
 
-데이터는 어종 합산이며, 통계표 `DT_1EZ0007` (시도·시군구별 양식현황 총괄)에서 가져옵니다.
+### 데모 카탈로그 (Supabase)
+| Method | URL | 설명 |
+|---|---|---|
+| GET | `/api/demo/market` | 마켓 상품 |
+| GET | `/api/demo/farmer` | 응원 농가 |
+| GET | `/api/demo/donation` | 환경 기부 단체 |
 
-```bash
-curl "http://localhost:8080/api/kosis/aquaculture/production?years=3"
-curl "http://localhost:8080/api/kosis/aquaculture/production?years=5&region=전라남도"
-```
+### AI 챗봇 (Anthropic Claude)
+| Method | URL | 설명 |
+|---|---|---|
+| POST | `/api/ai/match` | `{ "userMessage": "..." }` → `{ "reply", "model", "recommendations" }` |
 
-```json
-[
-  { "regionCode":"00","regionName":"전국","year":2025,"productionTon":82807.0 },
-  { "regionCode":"36","regionName":"전라남도","year":2025,"productionTon":27325.0 }
-]
-```
+---
 
-#### 사용 가능한 region 이름
+## 📊 데이터 출처
 
-KOSIS가 내려주는 시도 이름을 그대로 써야 합니다.
+- **과실 생산량**: KOSIS `DT_1ET0292` (과실생산량 성과수+미과수)
+- **수산 양식**: KOSIS `DT_1EZ0007` (시도·시군구별 양식현황 총괄)
+- **기상 학습 데이터**: 기상청 ASOS 종관기상관측
+- **미래 기후 시나리오**: SSP5-8.5 (IPCC AR6, 농촌진흥청 SSP 자료 참고)
+- **자연어 AI**: Anthropic Claude Sonnet 4.5
 
-```
-계, 서울특별시, 부산광역시, 대구광역시, 인천광역시, 광주광역시,
-대전광역시, 울산광역시, 세종특별자치시, 경기도, 강원도, 충청북도,
-충청남도, 전라북도, 전라남도, 경상북도, 경상남도, 제주도
-```
+---
 
-## 데이터 출처
+## 🎬 발표 시연 동선 (5분)
 
-- **과실 생산량**: KOSIS `DT_1ET0292` (과실생산량(성과수+미과수))
-  - https://kosis.kr/statHtml/statHtml.do?orgId=101&tblId=DT_1ET0292
-- **수산 양식 생산량**: KOSIS `DT_1EZ0007` (시도·시군구별 양식현황 총괄)
-  - https://kosis.kr/statHtml/statHtml.do?orgId=101&tblId=DT_1EZ0007
-- **미래 예측(예정)**: 농촌진흥청 SSP 기후변화 시나리오 자료
+| 시간 | 화면 | 멘트 핵심 |
+|---|---|---|
+| 0:00–0:30 | 홈 | "올해 사과값 70% 올랐습니다. 기후 위기는 이미 식탁에 와 있어요" |
+| 0:30–1:30 | 사라지는 식재료 상세 | "KOSIS 실시간. 매실·감귤·사과. 회귀로 10년 뒤 한계, 내년 +20%" |
+| 1:30–2:30 | 새로 자라는 작물 | "기상청 ASOS + SSP5-8.5 학습. 2050년 망고 +1,596% — 제주가 아열대" |
+| 2:30–4:00 | AI 매칭 → 상품 상세 | "Claude 실연동. 자연어 한 줄로 농가 카드까지" |
+| 4:00–4:30 | 마켓 · 찜 · MY | "구매의 5%는 환경보호. 응원 누적·CO₂ 절감 자동 집계" |
+| 4:30–5:00 | 마무리 | "데이터로 알리고, AI로 연결하고, 소비가 행동이 됩니다" |
 
-## 트러블슈팅
+---
 
-- **`KOSIS_API_KEY 환경변수가 비어 있습니다`** 경고가 뜬다면
-  → IntelliJ Run Configuration의 Environment variables에 빈 `KOSIS_API_KEY=` 가
-  등록돼 있을 수 있음. 삭제 후 재시작.
-- **`인증 KEY값이 누락되었습니다`** 응답
-  → yml의 api-key 가 비어있거나, 잘못된 키. 위 "본인 키로 교체" 참조.
-- **포트 8080 충돌**
-  → `lsof -ti tcp:8080 | xargs kill -9` 후 다시 실행.
+## 📝 라이선스 · 크레딧
+
+- **데이터**: 통계청 KOSIS Open API · 기상청 기상자료개방포털 · 농촌진흥청 SSP 자료
+- **AI 모델**: Anthropic Claude API
+- **아이콘**: lucide-react
+- **차트**: chart.js
+- **데이터베이스**: Supabase
+
+> 이 프로젝트는 두유톤 2026 해커톤 출품작이며, 시연용 데모 화면을 포함합니다.
+> 망고·바나나·올리브 미래 예측값은 SSP5-8.5 시나리오 기반 시뮬레이션 추정치입니다.
