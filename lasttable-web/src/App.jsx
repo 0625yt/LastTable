@@ -15,16 +15,21 @@ import {
   Sprout,
   Camera,
   ShoppingBag,
-  Recycle,
   Heart,
-  Award,
   Home as HomeIcon,
   Store,
   User,
   CloudSun,
+  Sparkles,
 } from "lucide-react";
 import "./App.css";
 import DetailDisappearing from "./DetailDisappearing";
+import Rising from "./Rising";
+import Market from "./Market";
+import AiMatch from "./AiMatch";
+import CameraScreen from "./Camera";
+import Wish from "./Wish";
+import My from "./My";
 
 // 배포 환경에 따라 백엔드 주소가 달라진다.
 // - 로컬: Vite 가 .env.development 또는 기본값 사용
@@ -99,6 +104,49 @@ function App() {
   // 상세 화면이면 그것만 렌더
   if (view === "disappearing") {
     return <DetailDisappearing onBack={function () { setView("home"); }} />;
+  }
+  if (view === "rising") {
+    return <Rising onBack={function () { setView("home"); }} />;
+  }
+  if (view === "market") {
+    return (
+      <>
+        <Market />
+        <BottomTabs current="market" onChange={setView} />
+      </>
+    );
+  }
+  if (view === "ai") {
+    return (
+      <>
+        <AiMatch />
+        <BottomTabs current="ai" onChange={setView} />
+      </>
+    );
+  }
+  if (view === "camera") {
+    return (
+      <>
+        <CameraScreen />
+        <BottomTabs current="camera" onChange={setView} />
+      </>
+    );
+  }
+  if (view === "wish") {
+    return (
+      <>
+        <Wish />
+        <BottomTabs current="wish" onChange={setView} />
+      </>
+    );
+  }
+  if (view === "my") {
+    return (
+      <>
+        <My />
+        <BottomTabs current="my" onChange={setView} />
+      </>
+    );
   }
 
   return (
@@ -180,28 +228,25 @@ function App() {
         <span className="more">더보기 <ChevronRight size={12} /></span>
       </div>
 
-      <div className="sub-cards">
-        <div className="sub-card">
+      <div className="sub-cards two">
+        <div
+          className="sub-card"
+          onClick={function () { setView("rising"); }}
+          style={{ cursor: "pointer" }}
+          role="button"
+        >
           <div className="ic"><Sprout size={16} /></div>
           <div>
-            <div className="label">새로 자라는<br />작물</div>
-            <div className="hint">5종 보기</div>
+            <div className="label">새로 자라는 작물</div>
+            <div className="hint">ML 예측 보기 ›</div>
           </div>
         </div>
 
         <div className="sub-card">
           <div className="ic"><Camera size={16} /></div>
           <div>
-            <div className="label">AI<br />식재료 분석</div>
-            <div className="hint">사진 한 장</div>
-          </div>
-        </div>
-
-        <div className="sub-card">
-          <div className="ic"><ShoppingBag size={16} /></div>
-          <div>
-            <div className="label">지역<br />로컬 푸드</div>
-            <div className="hint">내 주변</div>
+            <div className="label">AI 식재료 분석</div>
+            <div className="hint">사진 한 장 ›</div>
           </div>
         </div>
       </div>
@@ -224,15 +269,10 @@ function App() {
         <span className="more">더보기 <ChevronRight size={12} /></span>
       </div>
 
-      <div className="mini-grid">
-        <div className="mini">
-          <div className="ic"><Recycle size={16} /></div>
-          <span className="nm">탄소 절감</span>
-          <span className="desc">기록 확인</span>
-        </div>
+      <div className="mini-grid two">
         <div className="mini">
           <div className="ic"><ShoppingBag size={16} /></div>
-          <span className="nm">못난이<br />마켓</span>
+          <span className="nm">못난이 마켓</span>
           <span className="desc">합리 가격</span>
         </div>
         <div className="mini">
@@ -240,37 +280,38 @@ function App() {
           <span className="nm">환경 기부</span>
           <span className="desc">한 끼 후원</span>
         </div>
-        <div className="mini">
-          <div className="ic"><Award size={16} /></div>
-          <span className="nm">챌린지</span>
-          <span className="desc">이벤트 참여</span>
-        </div>
       </div>
 
-      {/* 하단 탭바 */}
-      <nav className="tabbar">
-        <div className="tab active">
-          <HomeIcon size={20} />
-          <span>홈</span>
-        </div>
-        <div className="tab">
-          <Store size={20} />
-          <span>마켓</span>
-        </div>
-        <div className="tab">
-          <Camera size={20} />
-          <span>촬영</span>
-        </div>
-        <div className="tab">
-          <Heart size={20} />
-          <span>찜</span>
-        </div>
-        <div className="tab">
-          <User size={20} />
-          <span>MY</span>
-        </div>
-      </nav>
+      <BottomTabs current="home" onChange={setView} />
     </div>
+  );
+}
+
+// 모든 메인 화면에서 재사용하는 하단 탭바.
+// current 와 일치하는 탭에 active 클래스가 붙는다.
+function BottomTabs({ current, onChange }) {
+  function tab(key, label, icon, extra) {
+    return (
+      <div
+        className={"tab" + (current === key ? " active" : "")}
+        onClick={function () { onChange(key); }}
+        style={{ cursor: "pointer" }}
+      >
+        {extra}
+        {icon}
+        <span>{label}</span>
+      </div>
+    );
+  }
+  return (
+    <nav className="tabbar six">
+      {tab("home",   "홈",   <HomeIcon size={20} />)}
+      {tab("market", "마켓", <Store size={20} />)}
+      {tab("camera", "촬영", <Camera size={20} />)}
+      {tab("ai",     "AI",   <Sparkles size={20} />, <span className="ai-dot" />)}
+      {tab("wish",   "찜",   <Heart size={20} />)}
+      {tab("my",     "MY",   <User size={20} />)}
+    </nav>
   );
 }
 

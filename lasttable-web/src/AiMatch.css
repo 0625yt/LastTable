@@ -1,0 +1,239 @@
+/* ============================================================
+   AiMatch — LastTable AI 챗봇 화면
+   ============================================================ */
+
+.ai-screen {
+  width: 390px;
+  height: 100vh;
+  margin: 0 auto;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  padding-bottom: 72px; /* 하단 탭바 자리 */
+}
+
+/* 헤더 */
+.ai-hdr {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.ai-hdr-ic {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #2f7a3e, #52b788);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(47, 122, 62, 0.25);
+}
+
+.ai-hdr-name {
+  font-size: 14.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-hdr-name::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+}
+
+.ai-hdr-sub {
+  font-size: 10.5px;
+  color: var(--ink-3);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.ai-hdr-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--green);
+  background: var(--green-soft);
+  padding: 3px 7px;
+  border-radius: 5px;
+  letter-spacing: 0.3px;
+}
+
+/* 메시지 본문 */
+.ai-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 14px 4px;
+  background: #f7f8f6;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: none;
+}
+
+.ai-body::-webkit-scrollbar { display: none; }
+
+.ai-msg {
+  max-width: 84%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  word-break: keep-all;
+  flex-shrink: 0;
+}
+
+.ai-msg.bot {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 4px;
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.ai-msg.user {
+  align-self: flex-end;
+  background: var(--green);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+  font-weight: 500;
+}
+
+.ai-msg.err {
+  background: var(--red-soft);
+  border-color: rgba(214, 58, 58, 0.2);
+  color: var(--red);
+}
+
+/* 타이핑 인디케이터 */
+.ai-typing {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  padding: 11px 14px;
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.ai-typing .ai-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  opacity: 0.4;
+  animation: aibounce 1.2s infinite;
+  position: static;
+  box-shadow: none;
+}
+
+.ai-typing .ai-dot:nth-child(2) { animation-delay: 0.15s; }
+.ai-typing .ai-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes aibounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%           { transform: translateY(-4px); opacity: 1; }
+}
+
+/* 추천 칩 */
+.ai-suggest {
+  padding: 8px 12px 0;
+  background: #f7f8f6;
+  flex-shrink: 0;
+}
+
+.ai-suggest-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.ai-suggest-row::-webkit-scrollbar { display: none; }
+
+.ai-chip {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.ai-chip:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.ai-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 입력창 */
+.ai-input {
+  padding: 9px 12px 11px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.ai-input-box {
+  flex: 1;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 0 13px;
+  font-size: 12.5px;
+  font-family: inherit;
+  outline: none;
+  background: #f7f8f6;
+}
+
+.ai-input-box:focus {
+  border-color: var(--green);
+  background: #fff;
+}
+
+.ai-input-box:disabled { opacity: 0.55; }
+
+.ai-send {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 11px;
+  background: var(--green);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ai-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

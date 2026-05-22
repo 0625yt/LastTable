@@ -1,0 +1,187 @@
+/* ============================================================
+   Rising — 새로 자라는 작물 (ML 예측)
+   ============================================================ */
+
+.rising {
+  width: 390px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #fff;
+  padding: 16px 20px 60px;
+  color: var(--ink);
+}
+
+/* 헤더 */
+.r-hdr {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.r-back {
+  background: none;
+  border: none;
+  padding: 6px 8px 6px 0;
+  color: var(--ink-2);
+  cursor: pointer;
+  margin-left: -8px;
+}
+
+.r-title-wrap h1 {
+  font-size: 21px;
+  font-weight: 800;
+  margin: 0 0 2px;
+  letter-spacing: -0.5px;
+}
+
+.r-title-wrap p {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin: 0;
+}
+
+/* ML 카드 */
+.r-card {
+  background: linear-gradient(180deg, #fff, #f7fbf8);
+  border: 1px solid var(--green-line);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.r-card-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.r-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--green);
+  background: var(--green-soft);
+  padding: 3px 7px;
+  border-radius: 5px;
+  letter-spacing: 0.3px;
+}
+
+.r-period {
+  font-size: 10.5px;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.r-card-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  margin-top: 6px;
+  letter-spacing: -0.2px;
+}
+
+.r-card-sub {
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 2px;
+  margin-bottom: 11px;
+  line-height: 1.45;
+}
+
+/* 리스트 */
+.r-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.r-row {
+  display: grid;
+  grid-template-columns: 24px 28px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.r-rank {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--ink-3);
+  letter-spacing: 0.5px;
+}
+
+.r-em {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.r-name {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.r-ton {
+  font-size: 10px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
+.r-pct {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.r-pct.up   { color: var(--green); }
+.r-pct.down { color: var(--ink-3); }
+
+.r-skeleton,
+.r-error {
+  padding: 18px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.r-error { color: var(--red); }
+
+/* 출처 */
+.r-foot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--ink-3);
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.r-foot strong {
+  color: var(--ink-2);
+  font-weight: 700;
+}
+
+/* 부가 설명 박스 */
+.r-note {
+  background: var(--green-soft);
+  border: 1px solid var(--green-line);
+  border-radius: 12px;
+  padding: 13px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.r-note-h {
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 5px;
+  font-size: 12.5px;
+}

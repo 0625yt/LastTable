@@ -22,13 +22,15 @@ public class WebConfig implements WebMvcConfigurer {
                 // 정확히 일치하는 출처들
                 .allowedOrigins(
                         "http://localhost:5173",   // Vite 기본 포트
+                        "http://localhost:5174",   // Vite 대체 포트 (5173 점유 시)
                         "http://localhost:3000",   // React 기본 포트
                         "https://green-table.vercel.app"  // 운영 URL
                 )
                 // Vercel preview 배포는 매번 URL이 달라지므로 패턴으로 허용
                 // 예: green-table-git-feature-foo-bar.vercel.app
                 .allowedOriginPatterns("https://*-vercel.app", "https://*.vercel.app")
-                .allowedMethods("GET")
+                .allowedMethods("GET", "POST", "OPTIONS")
+                .allowedHeaders("Content-Type")
                 .allowCredentials(false);
     }
 }

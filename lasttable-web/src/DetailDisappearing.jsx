@@ -7,7 +7,25 @@
 //  3) 상관계수 + 가격 예측 한 줄 노트 박스
 //  4) 못난이 마켓 CTA = 풀폭 다크그린 배너로 강조
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+// 백엔드 주소 — 홈 화면과 동일 규칙
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
+
+// KOSIS 에서 추적하는 10종. 한글이름·기후 원인 한 줄을 같이 들고 있다.
+// (원인 문구는 농진청·기상청 보고서에 반복적으로 등장하는 표준 진술)
+const TRACKED = [
+  { slug: "apple",                name: "사과",   cause: "봄 이상고온, 개화기 냉해" },
+  { slug: "pear",                 name: "배",     cause: "집중호우, 개화기 저온" },
+  { slug: "peach",                name: "복숭아", cause: "여름 폭염, 일조량 부족" },
+  { slug: "grape",                name: "포도",   cause: "여름 폭염, 일조량 부족" },
+  { slug: "mandarin",             name: "감귤",   cause: "겨울 한파, 강수 패턴 변화" },
+  { slug: "persimmon",            name: "감",     cause: "가을 일교차 감소, 착색 부진" },
+  { slug: "sweet-persimmon",      name: "단감",   cause: "주산지(남부) 기온 상승" },
+  { slug: "astringent-persimmon", name: "떫은감", cause: "수확기 강우 증가" },
+  { slug: "plum",                 name: "자두",   cause: "개화기 변온, 결실률 저하" },
+  { slug: "japanese-apricot",     name: "매실",   cause: "봄철 저온 피해, 결실률 급감" },
+];
 import {
   ArrowLeft,
   ArrowDownRight,
@@ -44,33 +62,9 @@ ChartJS.register(
   Legend
 );
 
-// TOP 3 — 실제 KOSIS 응답 흐름 시뮬레이션, 자릿수까지 보존
-const TOP_DECREASE = [
-  {
-    rank: 1,
-    name: "포도",
-    last: 216473,
-    curr: 198317,
-    changePct: -8.39,
-    cause: "여름 폭염, 일조량 부족",
-  },
-  {
-    rank: 2,
-    name: "배",
-    last: 179812,
-    curr: 170244,
-    changePct: -5.32,
-    cause: "집중호우, 개화기 저온",
-  },
-  {
-    rank: 3,
-    name: "사과",
-    last: 460088,
-    curr: 447952,
-    changePct: -2.64,
-    cause: "봄 이상고온, 개화기 냉해",
-  },
-];
+// TOP_DECREASE 는 이제 KOSIS API 응답에서 실시간으로 계산한다.
+// /api/kosis/fruits/{slug}/production?years=2&region=계 호출 결과 중
+// 가장 많이 감소한 3종을 골라 화면에 표시한다.
 
 // 생산량 ↓ × 가격 ↑ 원시 데이터 (지난 5년, 작물별)
 // 상관계수·탄력성·내년 예측은 아래 함수로 화면에서 직접 계산한다.
@@ -125,6 +119,52 @@ function DetailDisappearing({ onBack }) {
   // 차트 탭 상태
   const [chartTab, setChartTab] = useState("사과");
   const c = CORR_DATA[chartTab];
+
+  // KOSIS 실시간 TOP3 (작년→올해 감소 큰 순)
+  const [top3, setTop3] = useState({ loading: true, items: [], error: null });
+
+  useEffect(function () {
+    // years=3 으로 받아오는 이유:
+    //   KOSIS 가 일부 작물은 가장 최근 해(예: 2025)를 아직 집계하지 않았다.
+    //   3년치를 가져오면 모든 작물이 최소 2년치를 확보해 비교 가능해진다.
+    const requests = TRACKED.map(function (f) {
+      const url = API_BASE
+        + "/api/kosis/fruits/" + encodeURIComponent(f.slug)
+        + "/production?years=3&region=" + encodeURIComponent("계");
+      return fetch(url)
+        .then(function (r) { return r.json(); })
+        .then(function (rows) { return { meta: f, rows: rows }; });
+    });
+
+    Promise.all(requests)
+      .then(function (results) {
+        const items = [];
+        for (let i = 0; i < results.length; i++) {
+          const meta = results[i].meta;
+          const rows = results[i].rows;
+          if (!Array.isArray(rows) || rows.length < 2) continue;
+          rows.sort(function (a, b) { return a.year - b.year; });
+          const prev = rows[rows.length - 2].valueTon;
+          const curr = rows[rows.length - 1].valueTon;
+          if (prev === 0) continue;
+          const changePct = ((curr - prev) / prev) * 100;
+          // "감소량 상위" 화면이라 증가(양수)는 제외한다.
+          if (changePct >= 0) continue;
+          items.push({
+            name: meta.name,
+            cause: meta.cause,
+            last: Math.round(prev),
+            curr: Math.round(curr),
+            changePct: changePct,
+          });
+        }
+        items.sort(function (a, b) { return a.changePct - b.changePct; });
+        setTop3({ loading: false, items: items.slice(0, 3), error: null });
+      })
+      .catch(function (err) {
+        setTop3({ loading: false, items: [], error: err.message });
+      });
+  }, []);
 
   // 차트의 prod/price 배열에서 실시간 계산
   const corr = pearson(c.prod, c.price).toFixed(2);
@@ -224,39 +264,53 @@ function DetailDisappearing({ onBack }) {
         </div>
       </div>
 
-      {/* ── ① TOP 3 ── */}
+      {/* ── ① TOP 3 (KOSIS 실시간 응답) ── */}
       <section className="d-section">
         <h2 className="d-h2">전년 대비 감소량 상위 3종</h2>
 
-        <div className="d-top-list">
-          {TOP_DECREASE.map((item) => (
-            <div key={item.rank} className="d-top-row">
-              <div className="d-rank">0{item.rank}</div>
-              <div className="d-top-main">
-                <div className="d-top-name">{item.name}</div>
-                <div className="d-top-cause">{item.cause}</div>
-                <div className="d-top-nums">
-                  {item.last.toLocaleString()}톤
-                  <ChevronRight size={11} className="d-arrow" />
-                  {item.curr.toLocaleString()}톤
+        {top3.loading && (
+          <div className="d-top-list" style={{ padding: 18, textAlign: "center", color: "var(--ink-3)", fontSize: 12 }}>
+            KOSIS 응답 불러오는 중…
+          </div>
+        )}
+
+        {!top3.loading && top3.error && (
+          <div className="d-top-list" style={{ padding: 18, textAlign: "center", color: "var(--red)", fontSize: 12 }}>
+            데이터를 불러오지 못했어요 ({top3.error})
+          </div>
+        )}
+
+        {!top3.loading && !top3.error && top3.items.length > 0 && (
+          <div className="d-top-list">
+            {top3.items.map(function (item, i) { return (
+              <div key={item.name} className="d-top-row">
+                <div className="d-rank">0{i + 1}</div>
+                <div className="d-top-main">
+                  <div className="d-top-name">{item.name}</div>
+                  <div className="d-top-cause">{item.cause}</div>
+                  <div className="d-top-nums">
+                    {item.last.toLocaleString()}톤
+                    <ChevronRight size={11} className="d-arrow" />
+                    {item.curr.toLocaleString()}톤
+                  </div>
+                  <div className="d-bar">
+                    <div
+                      className="d-bar-fill"
+                      style={{
+                        width:
+                          Math.min(Math.abs(item.changePct) * 6, 100) + "%",
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="d-bar">
-                  <div
-                    className="d-bar-fill"
-                    style={{
-                      width:
-                        Math.min(Math.abs(item.changePct) * 6, 100) + "%",
-                    }}
-                  />
+                <div className="d-top-pct">
+                  {item.changePct.toFixed(2)}
+                  <span>%</span>
                 </div>
               </div>
-              <div className="d-top-pct">
-                {item.changePct.toFixed(2)}
-                <span>%</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ); })}
+          </div>
+        )}
 
         <div className="d-source">
           <Info size={11} /> KOSIS · 과실생산량(성과수+미과수), DT_1ET0292

@@ -13,6 +13,27 @@ kosis:
   api-key: OWUyNDE4YTRjNDU2ODY4N2IyZjEzMzQ3NTQ1YzBmNGE=
   timeout-ms: 10000
 
+# Anthropic Claude API
+# 키는 .env 파일에서 자동 주입 (spring-dotenv).
+# 모델 변경 가이드:
+#   claude-sonnet-4-5         — 데모 기본값. 균형 잡힌 품질·속도·안정성
+#   claude-haiku-4-5-20251001 — 더 빠르지만 신모델이라 529 가끔 발생
+#   claude-opus-4-1-20250805   — 최고 품질, 비싸고 느림
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY:}
+  base-url: https://api.anthropic.com
+  model: claude-sonnet-4-5
+  max-tokens: 1024
+  timeout-ms: 20000
+
+# Supabase (PostgreSQL + 자동 REST API)
+# anon key 는 RLS 우회 불가, service_role key 는 모든 권한.
+# 데모는 anon 으로 충분. (RLS 비활성 또는 select 정책 허용 시)
+supabase:
+  url: ${SUPABASE_URL:}
+  key: ${SUPABASE_KEY:}
+  timeout-ms: 10000
+
 logging:
   level:
     com.lasttable.api: DEBUG
