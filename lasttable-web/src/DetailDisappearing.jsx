@@ -272,7 +272,6 @@ function DetailDisappearing({ onBack, onNavigate }) {
 
   // 시계열 마지막 해 = YEARS 의 마지막 (2024)
   const baseYear = parseInt(YEARS[YEARS.length - 1], 10);
-  const yearsAheadOfNow = baseYear - new Date().getFullYear();
   const exhYear = exhaustionYear(c.prod, baseYear);
   const yearsLeft = exhYear ? exhYear - new Date().getFullYear() : null;
 
@@ -485,26 +484,18 @@ function DetailDisappearing({ onBack, onNavigate }) {
                 <Line data={chartData} options={chartOptions} />
               </div>
 
-              {/* 후킹 문구: 소멸 연도 + 내년 가격 */}
-              <div className="d-hook">
+              {/* 요약 — 차트가 의미하는 것 두 줄 */}
+              <div className="d-summary">
                 {yearsLeft && yearsLeft > 0 && (
-                  <div className="d-hook-row warn">
-                    <div className="d-hook-num">{yearsLeft}년 뒤</div>
-                    <div className="d-hook-txt">
-                      {chartTab}, 식탁에서 사라집니다
-                      <span className="d-hook-sub">현 추세 유지 시 {exhYear}년 생산량 0</span>
-                    </div>
-                  </div>
+                  <p>
+                    현재 추세대로면 <strong>{chartTab}</strong>은 약{" "}
+                    <strong>{yearsLeft}년 뒤</strong> 국내 생산이 한계에 도달합니다.
+                  </p>
                 )}
-                <div className="d-hook-row up">
-                  <div className="d-hook-num">+{nextPriceRisePct}%</div>
-                  <div className="d-hook-txt">
-                    내년 예상 가격
-                    <span className="d-hook-sub">
-                      {lastPrice.toLocaleString()}원 → {nextPriceWon.toLocaleString()}원 / kg
-                    </span>
-                  </div>
-                </div>
+                <p>
+                  내년 평균 가격은 약 <strong>{nextPriceRisePct}%</strong> 오른{" "}
+                  <strong>{nextPriceWon.toLocaleString()}원/kg</strong> 수준이 될 것으로 보입니다.
+                </p>
               </div>
               <div className="d-source">
                 <Info size={11} /> 최근 5년 회귀 추세 × 가격 탄력성 {elast.toFixed(2)} 기반 추정
