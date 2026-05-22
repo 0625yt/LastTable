@@ -177,12 +177,14 @@ function pearson(xs, ys) {
 }
 
 // 가격탄력성 — "생산량 1% 감소할 때 가격이 평균 X% 상승"
+// "감소 시그널" 분석이므로 생산량이 감소(↓) 한 구간만 평균에 포함한다.
+// (단발성 풍년 같은 역방향 구간은 노이즈로 보고 제외)
 function elasticity(prod, price) {
   let sum = 0, n = 0;
   for (let i = 1; i < prod.length; i++) {
     const dProd  = ((prod[i]  - prod[i - 1])  / prod[i - 1])  * 100;
     const dPrice = ((price[i] - price[i - 1]) / price[i - 1]) * 100;
-    if (Math.abs(dProd) < 0.1) continue;
+    if (dProd >= -0.1) continue; // 생산량이 줄지 않은 구간 제외
     sum += dPrice / -dProd;
     n++;
   }
@@ -307,15 +309,17 @@ function DetailDisappearing({ onBack, onNavigate }) {
       },
       y: {
         position: "left",
-        min: 80,
-        max: 110,
+        // 데이터 최소/최대에 맞춰 자동 — 위아래 5pt 여백
+        min: Math.floor(Math.min.apply(null, c.prod) / 5) * 5 - 5,
+        max: Math.ceil(Math.max.apply(null, c.prod) / 5) * 5 + 5,
         grid: { color: "rgba(0,0,0,0.04)" },
         ticks: { font: { size: 10 }, color: "#2d6a4f" },
       },
       y1: {
         position: "right",
-        min: 2500,
-        max: 10000,
+        // 가격축도 데이터에 맞춰 — 1000원 단위 라운딩
+        min: Math.floor(Math.min.apply(null, c.price) / 1000) * 1000 - 500,
+        max: Math.ceil(Math.max.apply(null, c.price) / 1000) * 1000 + 500,
         grid: { drawOnChartArea: false },
         ticks: {
           font: { size: 10 },
